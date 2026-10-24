@@ -184,9 +184,6 @@ Module.register("MMM-AtomVisualizer", {
   createShellElements (shells) {
     const rotationLayer = document.createElement("div");
     rotationLayer.className = "atom-rotation-layer";
-    if (this.config.autoRotate) {
-      rotationLayer.classList.add("atom-stage--rotate");
-    }
 
     for (const shell of this.shellGeometry(shells)) {
       rotationLayer.appendChild(this.createShellRing(shell));
@@ -225,13 +222,47 @@ Module.register("MMM-AtomVisualizer", {
   createElectronRunner (shell) {
     const runner = document.createElement("div");
     runner.className = "atom-electron-runner";
-    runner.style.animationDuration = `${shell.duration}s`;
-    runner.style.animationDelay = `${shell.delay}s`;
-    if (shell.reverse) {
+
+    const spin = this.runnerSpin(shell);
+    if (!spin.duration) {
+      runner.style.animationName = "none";
+      runner.style.transform = `rotate(${spin.angle}deg)`;
+      return runner;
+    }
+
+    runner.style.animationDuration = `${spin.duration}s`;
+    runner.style.animationDelay = `${spin.delay}s`;
+    if (spin.reverse) {
       runner.style.animationDirection = "reverse";
     }
 
     return runner;
+  },
+
+  // The animation of a shell's runner: the revolution of its electrons plus, with autoRotate, the rotation of the shell
+  // system. The rings are circles, so only the electrons visibly turn with the system, and one animation per runner at
+  // the summed speed shows the rotation without animating a layer as large as the stage. Returns the duration and
+  // start offset in seconds and the direction, or no duration and the fixed angle in degrees when the two rotations
+  // cancel out
+  runnerSpin (shell) {
+    if (!this.config.autoRotate) {
+      return {duration: shell.duration, delay: shell.delay, reverse: shell.reverse};
+    }
+
+    // In turns: the speed per second and the angle at the start (the system rotation starts at 0)
+    const direction = shell.reverse
+      ? -1
+      : 1;
+    const speed = direction / shell.duration + 1 / this.config.rotationDuration;
+    const startAngle = -direction * shell.delay / shell.duration;
+    if (Math.abs(speed) < 1e-9) {
+      return {duration: 0, angle: (startAngle % 1 + 1) % 1 * 360};
+    }
+
+    // A reverse animation turns from 360deg back to 0deg, so it starts at the progress of the negative angle
+    const duration = 1 / Math.abs(speed);
+    const startProgress = (Math.sign(speed) * startAngle % 1 + 1) % 1;
+    return {duration, delay: -startProgress * duration, reverse: speed < 0};
   },
 
   createElectronTrack (angle) {
@@ -252,7 +283,6 @@ Module.register("MMM-AtomVisualizer", {
     atom.style.setProperty("--atom-size", `${this.config.size}px`);
     atom.style.setProperty("--nucleus-size", `${Math.round(this.config.size * this.config.nucleusScale)}px`);
     atom.style.setProperty("--electron-size", `${this.config.electronSize}px`);
-    atom.style.setProperty("--rotation-duration", `${this.config.rotationDuration}s`);
 
     const rotationLayer = this.createShellElements(shells);
     atom.appendChild(rotationLayer);

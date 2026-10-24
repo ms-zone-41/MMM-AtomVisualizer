@@ -20,7 +20,6 @@
   --atom-size: 240px;
   --nucleus-size: 50px;
   --electron-size: 8px;
-  --rotation-duration: 20s;
   --shell-z-rotation: 0deg;
 
   display: flex;
@@ -44,10 +43,6 @@
   inset: 0;
   transform-style: preserve-3d;
   transform: translateZ(var(--atom-depth-translate-z));
-}
-
-.MMM-AtomVisualizer .atom-stage--rotate {
-  animation: atom-stage-spin var(--rotation-duration) linear infinite;
 }
 
 .MMM-AtomVisualizer .atom-shell {
@@ -197,16 +192,6 @@
 }
 
 @keyframes atom-electron-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes atom-stage-spin {
   from {
     transform: rotate(0deg);
   }

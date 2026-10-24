@@ -64,6 +64,19 @@ const fakeElement = () => {
 
 const assertClose = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} is not ${expected}`);
 
+// Angle in degrees of a linear CSS animation from rotate(0deg) to rotate(360deg) at `time` seconds after its start
+const cssTurn = ({duration, delay, reverse}, time) => {
+  const progress = ((time - delay) / duration % 1 + 1) % 1;
+  return reverse
+    ? 360 - progress * 360
+    : progress * 360;
+};
+
+const assertSameAngle = (actual, expected) => {
+  const difference = ((actual - expected) % 360 + 540) % 360 - 180;
+  assert.ok(Math.abs(difference) < 1e-6, `${actual}deg is not ${expected}deg`);
+};
+
 describe("MMM-AtomVisualizer Core Functions", () => {
   let instance;
 
@@ -367,10 +380,88 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     });
 
     it("should give each shell its own speed, start offset and direction", () => {
+      instance.config.autoRotate = false;
       const runners = instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
       assert.deepEqual(runners.map((runner) => runner.style.animationDuration), ["10s", "11.2s", "12.4s"]);
       assert.deepEqual(runners.map((runner) => runner.style.animationDelay), ["0s", "-1.5s", "-3s"]);
       assert.deepEqual(runners.map((runner) => runner.style.animationDirection), [undefined, "reverse", undefined]);
+    });
+
+    it("should leave the rotation layer still and let the runners carry autoRotate", () => {
+      const rotationLayer = instance.createShellElements([2, 8, 4]);
+      assert.equal(rotationLayer.className, "atom-rotation-layer");
+      const runners = rotationLayer.children.map((ring) => ring.children[0]);
+      for (const [index, shell] of instance.shellGeometry([2, 8, 4]).entries()) {
+        const spin = instance.runnerSpin(shell);
+        assert.equal(runners[index].style.animationDuration, `${spin.duration}s`);
+        assert.equal(runners[index].style.animationDelay, `${spin.delay}s`);
+        assert.equal(runners[index].style.animationDirection, spin.reverse
+          ? "reverse"
+          : undefined);
+      }
+    });
+
+    it("should not animate a runner whose electrons stand still", () => {
+      instance.config.rotationDuration = 11.2;
+      const runners = instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
+      assert.equal(runners[1].style.animationName, "none");
+      assert.equal(runners[1].style.transform, `rotate(${instance.runnerSpin(instance.shellGeometry([2, 8, 4])[1]).angle}deg)`);
+      assert.equal(runners[1].style.animationDuration, undefined);
+      assert.equal(runners[0].style.animationName, undefined);
+    });
+  });
+
+  describe("runnerSpin", () => {
+    it("should keep the revolution of each shell without autoRotate", () => {
+      instance.config.autoRotate = false;
+      for (const shell of instance.shellGeometry([2, 8, 4])) {
+        assert.deepEqual({...instance.runnerSpin(shell)}, {duration: shell.duration, delay: shell.delay, reverse: shell.reverse});
+      }
+    });
+
+    it("should add the system rotation to the speed of every shell", () => {
+      const spins = instance.shellGeometry([2, 8, 4]).map((shell) => instance.runnerSpin(shell));
+      // 1 / (1 / 10 + 1 / 42), 1 / (1 / 11.2 - 1 / 42) turning back, 1 / (1 / 12.4 + 1 / 42)
+      for (const [index, expected] of [420 / 52, 470.4 / 30.8, 520.8 / 54.4].entries()) {
+        assertClose(spins[index].duration, expected);
+        assert.ok(spins[index].delay <= 0 && spins[index].delay > -expected);
+      }
+      assert.deepEqual(spins.map((spin) => spin.reverse), [false, true, false]);
+    });
+
+    it("should turn a reverse shell back only when it revolves faster than the system rotates", () => {
+      instance.config.rotationDuration = 8;
+      instance.config.electronSpeed = 20;
+      // 1 / 20 + 1 / 8 forward, 1 / 8 - 1 / 21.2 forward: the reverse shell is slower than the system rotation
+      assert.deepEqual(instance.shellGeometry([2, 8]).map((shell) => instance.runnerSpin(shell).reverse), [false, false]);
+      instance.config.electronSpeed = 4;
+      assert.deepEqual(instance.shellGeometry([2, 8]).map((shell) => instance.runnerSpin(shell).reverse), [false, true]);
+    });
+
+    it("should put every electron where the rotating stage put it", () => {
+      const defaults = {...instance.config};
+      for (const config of [{}, {mixedOrbitDirections: false}, {rotationDuration: 8, electronSpeed: 4}, {rotationDuration: 120, electronSpeed: 2}]) {
+        instance.config = {...defaults, ...config};
+        const stage = {duration: instance.config.rotationDuration, delay: 0, reverse: false};
+        for (const shell of instance.shellGeometry([2, 8, 18, 32, 32, 18, 8])) {
+          const spin = instance.runnerSpin(shell);
+          for (const time of [0, 0.4, 2.5, 7.3, 18, 41, 3600.25]) {
+            assertSameAngle(cssTurn(spin, time), cssTurn(stage, time) + cssTurn(shell, time));
+          }
+        }
+      }
+    });
+
+    it("should hold the electrons at a fixed angle when the rotations cancel out", () => {
+      instance.config.rotationDuration = 11.2;
+      const [, shell] = instance.shellGeometry([2, 8]);
+      const spin = instance.runnerSpin(shell);
+      assert.equal(spin.duration, 0);
+      // -1.5 s of 11.2 s turning back: 1.5 / 11.2 of a turn before 0deg
+      assertClose(spin.angle, 360 - 1.5 / 11.2 * 360);
+      for (const time of [0, 3, 11.2, 100]) {
+        assertSameAngle(spin.angle, cssTurn({duration: 11.2, delay: 0, reverse: false}, time) + cssTurn(shell, time));
+      }
     });
   });
 
@@ -400,6 +491,7 @@ describe("MMM-AtomVisualizer Core Functions", () => {
 
     it("should be the geometry of the CSS rings and runners", () => {
       context.document.createElement = fakeElement;
+      instance.config.autoRotate = false;
       const geometry = instance.shellGeometry([2, 8, 4]);
       const rings = instance.createShellElements([2, 8, 4]).children;
       assert.deepEqual(rings.map((ring) => ring.style.width), geometry.map((shell) => `${shell.diameter}px`));
