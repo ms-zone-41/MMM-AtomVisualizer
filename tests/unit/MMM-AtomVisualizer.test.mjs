@@ -199,6 +199,14 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       }
     });
 
+    it("should clamp stepRate to 0 or the range 10 to 60", () => {
+      for (const [value, expected] of [[10, 10], [12.5, 12.5], [2.5, 10], [0.01, 10], [75, 60], [0, 0], [-1, 0], ["fast", 0], [undefined, 0]]) {
+        instance.config.stepRate = value;
+        instance.sanitizeConfig();
+        assert.equal(instance.config.stepRate, expected);
+      }
+    });
+
     it("should convert invalid size to default 240", () => {
       instance.config.size = "invalid";
       instance.sanitizeConfig();
@@ -409,6 +417,38 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.equal(runners[1].style.animationDuration, undefined);
       assert.equal(runners[0].style.animationName, undefined);
     });
+
+    it("should turn the runners smoothly without stepRate", () => {
+      const runners = instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
+      assert.deepEqual(runners.map((runner) => runner.style.animationTimingFunction), [undefined, undefined, undefined]);
+    });
+
+    it("should let every runner jump stepRate times a second", () => {
+      const runners = () => instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
+      instance.config.stepRate = 10;
+      instance.config.autoRotate = false;
+      // 10 s, 11.2 s and 12.4 s are whole steps already, and so are the start offsets
+      assert.deepEqual(runners().map((runner) => [runner.style.animationTimingFunction, runner.style.animationDuration, runner.style.animationDelay]), [
+        ["steps(100)", "10s", "0s"],
+        ["steps(112)", "11.2s", "-1.5s"],
+        ["steps(124)", "12.4s", "-3s"]
+      ]);
+      // With autoRotate 8.08 s, 15.27 s and 9.57 s per revolution, rounded to whole steps
+      instance.config.autoRotate = true;
+      assert.deepEqual(runners().map((runner) => [runner.style.animationTimingFunction, runner.style.animationDuration, runner.style.animationDelay, runner.style.animationDirection]), [
+        ["steps(81)", "8.1s", "0s", undefined],
+        ["steps(153)", "15.3s", "-2s", "reverse"],
+        ["steps(96)", "9.6s", "-2.3s", undefined]
+      ]);
+    });
+
+    it("should not step a runner whose electrons stand still", () => {
+      instance.config.rotationDuration = 11.2;
+      instance.config.stepRate = 10;
+      const [, runner] = instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
+      assert.equal(runner.style.animationName, "none");
+      assert.equal(runner.style.animationTimingFunction, undefined);
+    });
   });
 
   describe("runnerSpin", () => {
@@ -462,6 +502,58 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       for (const time of [0, 3, 11.2, 100]) {
         assertSameAngle(spin.angle, cssTurn({duration: 11.2, delay: 0, reverse: false}, time) + cssTurn(shell, time));
       }
+    });
+  });
+
+  describe("stepSpin", () => {
+    // Every runner as the CSS renderer animates it, for the 7 shells of the largest atoms
+    const steppedSpins = (config) => {
+      Object.assign(instance.config, config);
+      return instance.shellGeometry([2, 8, 18, 32, 32, 18, 8])
+        .map((shell) => instance.runnerSpin(shell))
+        .map((spin) => ({spin, stepped: instance.stepSpin(spin)}));
+    };
+    const configs = [{}, {autoRotate: false}, {mixedOrbitDirections: false}, {rotationDuration: 8, electronSpeed: 4}, {rotationDuration: 120, electronSpeed: 2}];
+
+    it("should put the jumps of all runners on one grid of 1 / stepRate seconds", () => {
+      const defaults = {...instance.config};
+      for (const stepRate of [1, 2.5, 7, 10, 24, 60]) {
+        for (const config of configs) {
+          instance.config = {...defaults};
+          for (const {stepped} of steppedSpins({...config, stepRate})) {
+            assertClose(stepped.duration / stepped.steps, 1 / stepRate);
+            assertClose(stepped.delay * stepRate, Math.round(stepped.delay * stepRate));
+            assert.ok(Number.isInteger(stepped.steps) && stepped.steps >= 1);
+          }
+        }
+      }
+    });
+
+    it("should keep the speed, direction and start angle within half a step", () => {
+      const defaults = {...instance.config};
+      for (const stepRate of [1, 2.5, 7, 10, 24, 60]) {
+        for (const config of configs) {
+          instance.config = {...defaults};
+          for (const {spin, stepped} of steppedSpins({...config, stepRate})) {
+            const halfStep = 0.5 / stepRate;
+            assert.ok(Math.abs(stepped.duration - spin.duration) <= halfStep + 1e-9);
+            assert.equal(stepped.reverse, spin.reverse);
+            const startError = Math.abs(stepped.delay / stepped.duration - spin.delay / spin.duration) % 1;
+            assert.ok(Math.min(startError, 1 - startError) <= 0.5 / stepped.steps + 1e-9);
+          }
+        }
+      }
+    });
+
+    it("should take at least one step per revolution", () => {
+      context.document.createElement = fakeElement;
+      instance.config.autoRotate = false;
+      instance.config.stepRate = 0.01;
+      const stepped = instance.stepSpin(instance.runnerSpin(instance.shellGeometry([2])[0]));
+      assert.equal(stepped.steps, 1);
+      assertClose(stepped.duration, 100);
+      const [runner] = instance.createShellElements([2]).children[0].children;
+      assert.equal(runner.style.animationTimingFunction, "steps(1)");
     });
   });
 

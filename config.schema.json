@@ -64,6 +64,12 @@
       "minimum": 8,
       "description": "Duration of one shell-system rotation in seconds"
     },
+    "stepRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 60,
+      "description": "Move the electrons in this many steps per second instead of smoothly, so that weak devices redraw the atom less often; 0 moves them smoothly, values between 0 and 10 count as 10"
+    },
     "showLabel": {
       "type": "boolean",
       "description": "Show the element name and symbol"

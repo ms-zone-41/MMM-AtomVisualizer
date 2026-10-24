@@ -18,6 +18,7 @@ Module.register("MMM-AtomVisualizer", {
     mixedOrbitDirections: true,
     autoRotate: true,
     rotationDuration: 42,
+    stepRate: 0,
     showLabel: true,
     showAtomicNumber: true,
     showShells: true,
@@ -99,6 +100,10 @@ Module.register("MMM-AtomVisualizer", {
     this.config.rotationDuration = Number.isFinite(this.config.rotationDuration)
       ? Math.max(8, this.config.rotationDuration)
       : 32;
+    // Fewer than 10 steps a second make shells with many electrons look stuck or turning backwards
+    this.config.stepRate = Number.isFinite(this.config.stepRate) && this.config.stepRate > 0
+      ? Math.min(60, Math.max(10, this.config.stepRate))
+      : 0;
     this.config.cycleEvery = Number.isFinite(this.config.cycleEvery)
       ? Math.max(10, this.config.cycleEvery)
       : 60;
@@ -230,10 +235,16 @@ Module.register("MMM-AtomVisualizer", {
       return runner;
     }
 
-    runner.style.animationDuration = `${spin.duration}s`;
-    runner.style.animationDelay = `${spin.delay}s`;
-    if (spin.reverse) {
+    const timing = this.config.stepRate > 0
+      ? this.stepSpin(spin)
+      : spin;
+    runner.style.animationDuration = `${timing.duration}s`;
+    runner.style.animationDelay = `${timing.delay}s`;
+    if (timing.reverse) {
       runner.style.animationDirection = "reverse";
+    }
+    if (timing.steps) {
+      runner.style.animationTimingFunction = `steps(${timing.steps})`;
     }
 
     return runner;
@@ -263,6 +274,16 @@ Module.register("MMM-AtomVisualizer", {
     const duration = 1 / Math.abs(speed);
     const startProgress = (Math.sign(speed) * startAngle % 1 + 1) % 1;
     return {duration, delay: -startProgress * duration, reverse: speed < 0};
+  },
+
+  // With stepRate, the runners jump instead of turning smoothly: stepRate times a second and all at the same moments,
+  // so the compositor redraws the atom stepRate times a second instead of at the display rate. For that, every runner's
+  // duration is rounded to whole steps of 1 / stepRate seconds and its start offset to the same grid, so a revolution
+  // takes up to half a step longer or shorter
+  stepSpin (spin) {
+    const steps = Math.max(1, Math.round(spin.duration * this.config.stepRate));
+    const startStep = Math.round(-spin.delay / spin.duration * steps) % steps;
+    return {...spin, steps, duration: steps / this.config.stepRate, delay: -startStep / this.config.stepRate};
   },
 
   createElectronTrack (angle) {

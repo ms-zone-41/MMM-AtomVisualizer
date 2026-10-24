@@ -52,6 +52,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `mixedOrbitDirections`  | `boolean`  | `true`  | Alternate electron direction per shell for visual depth                                                 |
 | `autoRotate`            | `boolean`  | `true`  | Slowly rotate shell system                                                                              |
 | `rotationDuration`      | `number`   | `42`    | Duration of one shell system rotation in seconds                                                        |
+| `stepRate`              | `number`   | `0`     | Electron steps per second instead of smooth motion, for weak devices (0 = smooth, otherwise 10 to 60)   |
 | `showLabel`             | `boolean`  | `true`  | Show element name and symbol                                                                            |
 | `showAtomicNumber`      | `boolean`  | `true`  | Show atomic number                                                                                      |
 | `showShells`            | `boolean`  | `true`  | Show shell distribution (e.g. 2-8-6)                                                                    |
