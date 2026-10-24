@@ -162,6 +162,25 @@ Module.register("MMM-AtomVisualizer", {
     }
   },
 
+  // Size and motion of each shell: ring diameter (border box), ring rotation in degrees and the revolution of its
+  // electrons (duration and start offset in seconds, direction)
+  shellGeometry (shells) {
+    const shellCount = shells.length;
+    const maxRadius = this.config.size / 2 - this.config.electronSize * 1.2;
+    const outerRadius = maxRadius * this.shellScale(shellCount);
+    const nucleusRadius = this.config.size * this.config.nucleusScale / 2;
+    const orbitSpace = Math.max(14, (outerRadius - nucleusRadius) / Math.max(1, shellCount));
+
+    return shells.map((electronCount, index) => ({
+      electronCount,
+      diameter: Math.min(this.config.size - this.config.electronSize, (nucleusRadius + orbitSpace * (index + 1)) * 2),
+      rotation: index * 24,
+      duration: this.config.electronSpeed + index * 1.2,
+      delay: index * -1.5,
+      reverse: this.config.mixedOrbitDirections && index % 2 === 1
+    }));
+  },
+
   createShellElements (shells) {
     const rotationLayer = document.createElement("div");
     rotationLayer.className = "atom-rotation-layer";
@@ -169,16 +188,9 @@ Module.register("MMM-AtomVisualizer", {
       rotationLayer.classList.add("atom-stage--rotate");
     }
 
-    const shellCount = shells.length;
-    const maxRadius = this.config.size / 2 - this.config.electronSize * 1.2;
-    const outerRadius = maxRadius * this.shellScale(shellCount);
-    const nucleusRadius = this.config.size * this.config.nucleusScale / 2;
-    const orbitSpace = Math.max(14, (outerRadius - nucleusRadius) / Math.max(1, shellCount));
-
-    shells.forEach((electronCount, shellIndex) => {
-      const ring = this.createShellRing(electronCount, shellIndex, nucleusRadius, orbitSpace);
-      rotationLayer.appendChild(ring);
-    });
+    for (const shell of this.shellGeometry(shells)) {
+      rotationLayer.appendChild(this.createShellRing(shell));
+    }
 
     return rotationLayer;
   },
@@ -192,35 +204,30 @@ Module.register("MMM-AtomVisualizer", {
     return 1 - this.config.shellScaling * (1 - shellCount / this.maxShellCount);
   },
 
-  createShellRing (electronCount, shellIndex, nucleusRadius, orbitSpace) {
+  createShellRing (shell) {
     const ring = document.createElement("div");
     ring.className = "atom-shell";
-
-    const orbitRadius = nucleusRadius + orbitSpace * (shellIndex + 1);
-    const orbitDiameter = Math.min(this.config.size - this.config.electronSize, orbitRadius * 2);
-
-    ring.style.width = `${orbitDiameter}px`;
-    ring.style.height = `${orbitDiameter}px`;
-    ring.style.setProperty("--shell-z-rotation", `${shellIndex * 24}deg`);
+    ring.style.width = `${shell.diameter}px`;
+    ring.style.height = `${shell.diameter}px`;
+    ring.style.setProperty("--shell-z-rotation", `${shell.rotation}deg`);
 
     // All electrons of a shell circle at the same speed, so one animated runner carries them all:
     // one composited layer per shell instead of one per electron
-    const runner = this.createElectronRunner(shellIndex);
-    for (let index = 0; index < electronCount; index += 1) {
-      const angle = 360 / electronCount * index;
-      runner.appendChild(this.createElectronTrack(angle));
+    const runner = this.createElectronRunner(shell);
+    for (let index = 0; index < shell.electronCount; index += 1) {
+      runner.appendChild(this.createElectronTrack(360 / shell.electronCount * index));
     }
     ring.appendChild(runner);
 
     return ring;
   },
 
-  createElectronRunner (shellIndex) {
+  createElectronRunner (shell) {
     const runner = document.createElement("div");
     runner.className = "atom-electron-runner";
-    runner.style.animationDuration = `${this.config.electronSpeed + shellIndex * 1.2}s`;
-    runner.style.animationDelay = `${shellIndex * -1.5}s`;
-    if (this.config.mixedOrbitDirections && shellIndex % 2 === 1) {
+    runner.style.animationDuration = `${shell.duration}s`;
+    runner.style.animationDelay = `${shell.delay}s`;
+    if (shell.reverse) {
       runner.style.animationDirection = "reverse";
     }
 

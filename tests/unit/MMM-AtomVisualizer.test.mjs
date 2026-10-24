@@ -45,6 +45,25 @@ const context = vm.createContext({
 });
 script.runInContext(context);
 
+// Minimal DOM element: enough for the module's DOM building
+const fakeElement = () => {
+  const element = {
+    appendChild (child) {
+      element.children.push(child);
+      return child;
+    },
+    children: [],
+    className: "",
+    classList: {add: (name) => {
+      element.className = `${element.className} ${name}`.trim();
+    }},
+    style: {setProperty: mock.fn()}
+  };
+  return element;
+};
+
+const assertClose = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} is not ${expected}`);
+
 describe("MMM-AtomVisualizer Core Functions", () => {
   let instance;
 
@@ -316,21 +335,7 @@ describe("MMM-AtomVisualizer Core Functions", () => {
 
   describe("createShellElements", () => {
     beforeEach(() => {
-      context.document.createElement = () => {
-        const element = {
-          appendChild (child) {
-            element.children.push(child);
-            return child;
-          },
-          children: [],
-          className: "",
-          classList: {add: (name) => {
-            element.className = `${element.className} ${name}`.trim();
-          }},
-          style: {setProperty: mock.fn()}
-        };
-        return element;
-      };
+      context.document.createElement = fakeElement;
     });
 
     it("should create one animated runner per shell that carries all its electrons", () => {
@@ -366,6 +371,40 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.deepEqual(runners.map((runner) => runner.style.animationDuration), ["10s", "11.2s", "12.4s"]);
       assert.deepEqual(runners.map((runner) => runner.style.animationDelay), ["0s", "-1.5s", "-3s"]);
       assert.deepEqual(runners.map((runner) => runner.style.animationDirection), [undefined, "reverse", undefined]);
+    });
+  });
+
+  describe("shellGeometry", () => {
+    it("should describe the size and motion of every shell", () => {
+      const geometry = instance.shellGeometry([2, 8, 4]);
+      assert.deepEqual(geometry.map(({electronCount, rotation, reverse}) => [electronCount, rotation, reverse]), [[2, 0, false], [8, 24, true], [4, 48, false]]);
+      for (const [index, shell] of geometry.entries()) {
+        assertClose(shell.diameter, [109.6, 166.4, 223.2][index]);
+        assertClose(shell.duration, 10 + index * 1.2);
+        assertClose(shell.delay, index * -1.5);
+      }
+    });
+
+    it("should keep 14 px between the shells and the rings inside the stage", () => {
+      instance.config.size = 140;
+      const diameters = instance.shellGeometry([2, 8, 18, 32, 32, 18, 8]).map((shell) => shell.diameter);
+      for (const [index, expected] of [58.8, 86.8, 114.8, 133, 133, 133, 133].entries()) {
+        assertClose(diameters[index], expected);
+      }
+    });
+
+    it("should not reverse any shell without mixedOrbitDirections", () => {
+      instance.config.mixedOrbitDirections = false;
+      assert.deepEqual(instance.shellGeometry([2, 8, 4]).map((shell) => shell.reverse), [false, false, false]);
+    });
+
+    it("should be the geometry of the CSS rings and runners", () => {
+      context.document.createElement = fakeElement;
+      const geometry = instance.shellGeometry([2, 8, 4]);
+      const rings = instance.createShellElements([2, 8, 4]).children;
+      assert.deepEqual(rings.map((ring) => ring.style.width), geometry.map((shell) => `${shell.diameter}px`));
+      assert.deepEqual(rings.map((ring) => [...ring.style.setProperty.mock.calls[0].arguments]), geometry.map((shell) => ["--shell-z-rotation", `${shell.rotation}deg`]));
+      assert.deepEqual(rings.map((ring) => ring.children[0].style.animationDuration), geometry.map((shell) => `${shell.duration}s`));
     });
   });
 });
