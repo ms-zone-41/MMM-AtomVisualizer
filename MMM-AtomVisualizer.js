@@ -11,6 +11,7 @@ Module.register("MMM-AtomVisualizer", {
     shuffleElements: true,
     cycleEvery: 60,
     size: 240,
+    shellScaling: 0,
     nucleusScale: 0.22,
     electronSize: 7,
     electronSpeed: 10,
@@ -46,6 +47,11 @@ Module.register("MMM-AtomVisualizer", {
       this.currentElementIndex = 0;
       this.activeSymbol = this.resolveSymbol(this.config.element);
     }
+
+    const shownSymbols = this.config.cycleElements
+      ? this.config.elements
+      : [this.activeSymbol];
+    this.maxShellCount = Math.max(...shownSymbols.map((symbol) => ELEMENTS_DATA[symbol].shells.length));
   },
 
   getStyles () {
@@ -78,6 +84,9 @@ Module.register("MMM-AtomVisualizer", {
     this.config.size = Number.isFinite(this.config.size)
       ? Math.max(140, this.config.size)
       : 240;
+    this.config.shellScaling = Number.isFinite(this.config.shellScaling)
+      ? Math.min(1, Math.max(0, this.config.shellScaling))
+      : 0;
     this.config.nucleusScale = Number.isFinite(this.config.nucleusScale)
       ? Math.min(0.4, Math.max(0.12, this.config.nucleusScale))
       : 0.22;
@@ -162,8 +171,9 @@ Module.register("MMM-AtomVisualizer", {
 
     const shellCount = shells.length;
     const maxRadius = this.config.size / 2 - this.config.electronSize * 1.2;
+    const outerRadius = maxRadius * this.shellScale(shellCount);
     const nucleusRadius = this.config.size * this.config.nucleusScale / 2;
-    const orbitSpace = Math.max(14, (maxRadius - nucleusRadius) / Math.max(1, shellCount));
+    const orbitSpace = Math.max(14, (outerRadius - nucleusRadius) / Math.max(1, shellCount));
 
     shells.forEach((electronCount, shellIndex) => {
       const ring = this.createShellRing(electronCount, shellIndex, nucleusRadius, orbitSpace);
@@ -171,6 +181,15 @@ Module.register("MMM-AtomVisualizer", {
     });
 
     return rotationLayer;
+  },
+
+  // Atoms with fewer shells than the largest atom that can be shown get a smaller orbit radius:
+  // shellScaling 0 keeps every atom at full size, 1 makes the radius proportional to the shell count
+  shellScale (shellCount) {
+    if (!this.config.shellScaling || !this.maxShellCount) {
+      return 1;
+    }
+    return 1 - this.config.shellScaling * (1 - shellCount / this.maxShellCount);
   },
 
   createShellRing (electronCount, shellIndex, nucleusRadius, orbitSpace) {

@@ -159,6 +159,14 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.equal(instance.config.cycleEvery, 10);
     });
 
+    it("should clamp shellScaling to the range 0 to 1", () => {
+      for (const [value, expected] of [[0.5, 0.5], [1.5, 1], [-0.2, 0], ["big", 0]]) {
+        instance.config.shellScaling = value;
+        instance.sanitizeConfig();
+        assert.equal(instance.config.shellScaling, expected);
+      }
+    });
+
     it("should convert invalid size to default 240", () => {
       instance.config.size = "invalid";
       instance.sanitizeConfig();
@@ -291,6 +299,21 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     });
   });
 
+  describe("start", () => {
+    it("should take the largest shell count from the elements that can be shown", () => {
+      instance.scheduleElementCycle = mock.fn();
+      instance.config.cycleElements = true;
+      instance.config.elements = ["H", "Na", "C"];
+      instance.start();
+      assert.equal(instance.maxShellCount, 3);
+
+      instance.config.cycleElements = false;
+      instance.config.element = "Fe";
+      instance.start();
+      assert.equal(instance.maxShellCount, 4);
+    });
+  });
+
   describe("createShellElements", () => {
     beforeEach(() => {
       context.document.createElement = () => {
@@ -325,6 +348,17 @@ describe("MMM-AtomVisualizer Core Functions", () => {
           assert.equal(track.children[0].className, "atom-electron");
         }
       }
+    });
+
+    it("should shrink the orbits of atoms with fewer shells by shellScaling", () => {
+      const outerDiameter = (shells) => Number.parseFloat(instance.createShellElements(shells).children.at(-1).style.width);
+      instance.maxShellCount = 4;
+      instance.config.shellScaling = 0;
+      assert.equal(outerDiameter([1]), 223.2);
+      instance.config.shellScaling = 0.5;
+      assert.equal(outerDiameter([1]), 139.5);
+      assert.ok(Math.abs(outerDiameter([2, 4]) - 167.4) < 1e-9);
+      assert.equal(outerDiameter([2, 8, 14, 2]), 223.2);
     });
 
     it("should give each shell its own speed, start offset and direction", () => {

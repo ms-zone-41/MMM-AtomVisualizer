@@ -45,6 +45,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `shuffleElements`       | `boolean`  | `true`  | Randomize element order when cycling starts (Fisher-Yates shuffle)                                      |
 | `cycleEvery`            | `number`   | `60`    | Cycle interval in seconds                                                                               |
 | `size`                  | `number`   | `240`   | Atom size in pixels                                                                                     |
+| `shellScaling`          | `number`   | `0`     | Draw atoms with fewer shells smaller (0 = all at `size`, 1 = radius proportional to the shell count)    |
 | `nucleusScale`          | `number`   | `0.22`  | Nucleus-to-atom size ratio                                                                              |
 | `electronSize`          | `number`   | `7`     | Electron size in pixels                                                                                 |
 | `electronSpeed`         | `number`   | `10`    | Base electron revolution duration (seconds)                                                             |

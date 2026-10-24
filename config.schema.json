@@ -29,6 +29,12 @@
       "minimum": 140,
       "description": "Atom size in pixels"
     },
+    "shellScaling": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Draw atoms with fewer shells smaller: 0 keeps every atom at full size, 1 makes the orbit radius proportional to the shell count"
+    },
     "nucleusScale": {
       "type": "number",
       "minimum": 0.12,
