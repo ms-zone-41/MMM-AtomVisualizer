@@ -290,4 +290,48 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.ok(arr.includes(2));
     });
   });
+
+  describe("createShellElements", () => {
+    beforeEach(() => {
+      context.document.createElement = () => {
+        const element = {
+          appendChild (child) {
+            element.children.push(child);
+            return child;
+          },
+          children: [],
+          className: "",
+          classList: {add: (name) => {
+            element.className = `${element.className} ${name}`.trim();
+          }},
+          style: {setProperty: mock.fn()}
+        };
+        return element;
+      };
+    });
+
+    it("should create one animated runner per shell that carries all its electrons", () => {
+      const rotationLayer = instance.createShellElements([2, 8, 4]);
+      assert.equal(rotationLayer.children.length, 3);
+      for (const [shellIndex, electronCount] of [2, 8, 4].entries()) {
+        const ring = rotationLayer.children[shellIndex];
+        assert.equal(ring.children.length, 1);
+        const [runner] = ring.children;
+        assert.equal(runner.className, "atom-electron-runner");
+        assert.equal(runner.children.length, electronCount);
+        for (const [index, track] of runner.children.entries()) {
+          assert.equal(track.className, "atom-electron-track");
+          assert.equal(track.style.transform, `rotate(${360 / electronCount * index}deg)`);
+          assert.equal(track.children[0].className, "atom-electron");
+        }
+      }
+    });
+
+    it("should give each shell its own speed, start offset and direction", () => {
+      const runners = instance.createShellElements([2, 8, 4]).children.map((ring) => ring.children[0]);
+      assert.deepEqual(runners.map((runner) => runner.style.animationDuration), ["10s", "11.2s", "12.4s"]);
+      assert.deepEqual(runners.map((runner) => runner.style.animationDelay), ["0s", "-1.5s", "-3s"]);
+      assert.deepEqual(runners.map((runner) => runner.style.animationDirection), [undefined, "reverse", undefined]);
+    });
+  });
 });

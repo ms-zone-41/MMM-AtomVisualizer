@@ -184,20 +184,19 @@ Module.register("MMM-AtomVisualizer", {
     ring.style.height = `${orbitDiameter}px`;
     ring.style.setProperty("--shell-z-rotation", `${shellIndex * 24}deg`);
 
+    // All electrons of a shell circle at the same speed, so one animated runner carries them all:
+    // one composited layer per shell instead of one per electron
+    const runner = this.createElectronRunner(shellIndex);
     for (let index = 0; index < electronCount; index += 1) {
       const angle = 360 / electronCount * index;
-      const track = this.createElectronTrack(angle, shellIndex);
-      ring.appendChild(track);
+      runner.appendChild(this.createElectronTrack(angle));
     }
+    ring.appendChild(runner);
 
     return ring;
   },
 
-  createElectronTrack (angle, shellIndex) {
-    const track = document.createElement("div");
-    track.className = "atom-electron-track";
-    track.style.transform = `rotate(${angle}deg)`;
-
+  createElectronRunner (shellIndex) {
     const runner = document.createElement("div");
     runner.className = "atom-electron-runner";
     runner.style.animationDuration = `${this.config.electronSpeed + shellIndex * 1.2}s`;
@@ -206,11 +205,17 @@ Module.register("MMM-AtomVisualizer", {
       runner.style.animationDirection = "reverse";
     }
 
+    return runner;
+  },
+
+  createElectronTrack (angle) {
+    const track = document.createElement("div");
+    track.className = "atom-electron-track";
+    track.style.transform = `rotate(${angle}deg)`;
+
     const electron = document.createElement("div");
     electron.className = "atom-electron";
-
-    runner.appendChild(electron);
-    track.appendChild(runner);
+    track.appendChild(electron);
 
     return track;
   },
