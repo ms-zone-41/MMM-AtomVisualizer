@@ -15,6 +15,7 @@
     inset -2px -2px 4px rgba(12, 36, 70, 0.35),
     inset 1px 1px 2px rgba(255, 255, 255, 0.45), var(--atom-glow);
   --atom-electron-render-scale: 1;
+  --atom-table-cell-size: 12px;
 
   /* Default values for JS-injected variables to satisfy linter */
   --atom-size: 240px;
@@ -153,6 +154,27 @@
 .MMM-AtomVisualizer .atom-rotation-layer {
   transform-style: flat;
   transform: none;
+}
+
+/* 18 groups and 10 rows: periods 1 to 7, a spacer row, lanthanides and actinides. The bottom margin keeps the
+   atom below at a distance like the top margin of the details; with the items in a row, set both to 0 */
+.MMM-AtomVisualizer .atom-periodic-table {
+  display: grid;
+  grid-template-columns: repeat(18, var(--atom-table-cell-size));
+  grid-template-rows: repeat(10, var(--atom-table-cell-size));
+  gap: 1px;
+  margin-bottom: 12px;
+}
+
+/* The theme's text colors, so that the table works on dark and light backgrounds */
+.MMM-AtomVisualizer .atom-table-cell {
+  background-color: var(--color-text-dimmed, #666);
+  opacity: 0.35;
+}
+
+.MMM-AtomVisualizer .atom-table-cell--active {
+  background-color: var(--color-text-bright, #fff);
+  opacity: 1;
 }
 
 .MMM-AtomVisualizer .atom-details {

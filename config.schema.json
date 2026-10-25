@@ -105,6 +105,10 @@
     "showDiscoveredBy": {
       "type": "boolean",
       "description": "Show the element discoverer"
+    },
+    "showPeriodicTable": {
+      "type": "boolean",
+      "description": "Show a small periodic table with the current element highlighted, as the first item of the module (left of the atom when the items are in a row)"
     }
   }
 }

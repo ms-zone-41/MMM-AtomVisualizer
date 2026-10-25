@@ -27,7 +27,8 @@ Module.register("MMM-AtomVisualizer", {
     showCas: true,
     showPhase: true,
     showElectronegativity: true,
-    showDiscoveredBy: true
+    showDiscoveredBy: true,
+    showPeriodicTable: false
   },
 
   start () {
@@ -316,6 +317,38 @@ Module.register("MMM-AtomVisualizer", {
     return atom;
   },
 
+  // A small periodic table with the element on display highlighted
+  createPeriodicTable (activeSymbol) {
+    const table = document.createElement("div");
+    table.className = "atom-periodic-table";
+
+    for (const [symbol, element] of Object.entries(ELEMENTS_DATA)) {
+      const {row, column} = this.tablePosition(element);
+      const cell = document.createElement("div");
+      cell.className = symbol === activeSymbol
+        ? "atom-table-cell atom-table-cell--active"
+        : "atom-table-cell";
+      cell.title = symbol;
+      cell.style.gridRow = String(row);
+      cell.style.gridColumn = String(column);
+      table.appendChild(cell);
+    }
+
+    return table;
+  },
+
+  // Row and column of an element in the table: periods 1 to 7, then a spacer row and the lanthanides (Z 57 to 71) and
+  // actinides (Z 89 to 103) in rows 9 and 10 under groups 3 to 17
+  tablePosition (element) {
+    if (element.number >= 57 && element.number <= 71) {
+      return {row: 9, column: element.number - 54};
+    }
+    if (element.number >= 89 && element.number <= 103) {
+      return {row: 10, column: element.number - 86};
+    }
+    return {row: element.period, column: element.group};
+  },
+
   createDetailsSection (element, symbol) {
     const details = document.createElement("div");
     details.className = "atom-details";
@@ -384,6 +417,10 @@ Module.register("MMM-AtomVisualizer", {
     if (!element) {
       wrapper.innerText = this.translate("ATOM_UNKNOWN");
       return wrapper;
+    }
+
+    if (this.config.showPeriodicTable) {
+      wrapper.appendChild(this.createPeriodicTable(symbol));
     }
 
     const shells = element.shells;

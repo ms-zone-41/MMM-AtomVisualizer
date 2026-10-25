@@ -62,6 +62,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `showPhase`             | `boolean`  | `true`  | Show phase (solid / liquid / gas)                                                                       |
 | `showElectronegativity` | `boolean`  | `true`  | Show electronegativity (Pauling scale)                                                                  |
 | `showDiscoveredBy`      | `boolean`  | `true`  | Show discoverer                                                                                         |
+| `showPeriodicTable`     | `boolean`  | `false` | Show a small periodic table that marks the element (cell size: CSS variable `--atom-table-cell-size`)   |
 
 ## Code of Conduct
 

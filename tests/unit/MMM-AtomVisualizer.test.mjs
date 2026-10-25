@@ -62,6 +62,18 @@ const fakeElement = () => {
   return element;
 };
 
+// Everything the module set on a tree of fake DOM elements, as a string to compare two trees
+const serializeDom = (element) => JSON.stringify(element, (key, value) => {
+  if (key === "setProperty") {
+    return value.mock.calls.map((call) => call.arguments);
+  }
+  return key === "classList"
+    ? undefined
+    : value;
+});
+
+const hasClass = (element, name) => element.className.split(" ").includes(name);
+
 const assertClose = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} is not ${expected}`);
 
 // Angle in degrees of a linear CSS animation from rotate(0deg) to rotate(360deg) at `time` seconds after its start
@@ -589,6 +601,60 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.deepEqual(rings.map((ring) => ring.style.width), geometry.map((shell) => `${shell.diameter}px`));
       assert.deepEqual(rings.map((ring) => [...ring.style.setProperty.mock.calls[0].arguments]), geometry.map((shell) => ["--shell-z-rotation", `${shell.rotation}deg`]));
       assert.deepEqual(rings.map((ring) => ring.children[0].style.animationDuration), geometry.map((shell) => `${shell.duration}s`));
+    });
+  });
+
+  describe("createPeriodicTable", () => {
+    const cellOf = (table, symbol) => table.children.find((cell) => cell.title === symbol);
+    const positionOf = (cell) => [Number(cell.style.gridRow), Number(cell.style.gridColumn)];
+
+    beforeEach(() => {
+      context.document.createElement = fakeElement;
+    });
+
+    it("should place the elements by period and group and the lanthanides and actinides in rows 9 and 10", () => {
+      const table = instance.createPeriodicTable("C");
+      assert.equal(table.className, "atom-periodic-table");
+      for (const [symbol, row, column] of [["H", 1, 1], ["He", 1, 18], ["La", 9, 3], ["Lu", 9, 17], ["U", 10, 6], ["Au", 6, 11]]) {
+        assert.deepEqual(positionOf(cellOf(table, symbol)), [row, column], symbol);
+      }
+    });
+
+    it("should give every element its own cell in 18 columns and 10 rows, with row 8 as the spacer", () => {
+      const table = instance.createPeriodicTable("C");
+      assert.equal(table.children.length, 118);
+      const positions = table.children.map((cell) => positionOf(cell));
+      assert.equal(new Set(positions.map(String)).size, 118);
+      assert.ok(positions.every(([row, column]) => row >= 1 && row <= 10 && row !== 8 && column >= 1 && column <= 18));
+    });
+
+    it("should mark the element on display and only that one", () => {
+      const table = instance.createPeriodicTable("U");
+      assert.ok(table.children.every((cell) => hasClass(cell, "atom-table-cell")));
+      assert.deepEqual(table.children.filter((cell) => hasClass(cell, "atom-table-cell--active")).map((cell) => cell.title), ["U"]);
+    });
+  });
+
+  describe("getDom", () => {
+    beforeEach(() => {
+      context.document.createElement = fakeElement;
+    });
+
+    it("should put the periodic table first, so that it is left of the atom in a row", () => {
+      instance.config.showPeriodicTable = true;
+      instance.config.element = "Au";
+      const [table, ...rest] = instance.getDom().children;
+      assert.equal(table.className, "atom-periodic-table");
+      assert.equal(table.children.find((cell) => hasClass(cell, "atom-table-cell--active")).title, "Au");
+      assert.deepEqual(rest.map((child) => child.className), ["atom-stage", "atom-details"]);
+    });
+
+    it("should leave the DOM as it was while the new options are off", () => {
+      const withoutOptions = serializeDom(instance.getDom());
+      Object.assign(instance.config, {showPeriodicTable: false});
+      instance.createPeriodicTable = () => assert.fail("createPeriodicTable ran");
+      assert.equal(serializeDom(instance.getDom()), withoutOptions);
+      assert.deepEqual(instance.getDom().children.map((child) => child.className), ["atom-stage", "atom-details"]);
     });
   });
 });
