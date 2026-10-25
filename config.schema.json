@@ -114,7 +114,7 @@
     },
     "markRadioactive": {
       "type": "boolean",
-      "description": "Mark the radioactive elements (technetium, promethium and everything from bismuth on): hatched in the periodic table with a legend, and a radiation sign after the element name"
+      "description": "Mark the radioactive elements (technetium, promethium and everything from bismuth on): hatched in the periodic table, and a radiation sign after the element name"
     },
     "showAbundance": {
       "type": "boolean",

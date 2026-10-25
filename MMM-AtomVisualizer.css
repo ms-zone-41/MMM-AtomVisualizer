@@ -161,7 +161,7 @@
 .MMM-AtomVisualizer .atom-periodic-table {
   display: grid;
   grid-template-columns: repeat(18, var(--atom-table-cell-size));
-  grid-template-rows: repeat(10, var(--atom-table-cell-size)) auto;
+  grid-template-rows: repeat(10, var(--atom-table-cell-size));
   gap: 1px;
   margin-bottom: 12px;
 }
@@ -186,24 +186,6 @@
 .MMM-AtomVisualizer .atom-table-cell--active {
   background: var(--color-text-bright, #fff);
   opacity: 1;
-}
-
-/* The legend for the hatching, in the row under the table (row 11; without it the grid would put it into the spacer row) */
-.MMM-AtomVisualizer .atom-table-legend {
-  grid-row: 11;
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  font-size: var(--font-size-xsmall, 0.75rem);
-  line-height: 1;
-  color: var(--color-text-dimmed, #666);
-}
-
-.MMM-AtomVisualizer .atom-table-swatch {
-  width: var(--atom-table-cell-size);
-  height: var(--atom-table-cell-size);
 }
 
 /* The radiation sign after the name of a radioactive element, gray like MagicMirror's small icons */

@@ -638,12 +638,13 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.deepEqual(table.children.filter((cell) => hasClass(cell, "atom-table-cell--active")).map((cell) => cell.title), ["U"]);
     });
 
-    it("should hatch the radioactive elements and explain it in a legend only with markRadioactive", () => {
-      const radioactive = (table) => table.children.filter((cell) => cell.title && hasClass(cell, "atom-table-cell--radioactive")).map((cell) => cell.title);
+    it("should hatch the radioactive elements only with markRadioactive", () => {
+      const radioactive = (table) => table.children.filter((cell) => hasClass(cell, "atom-table-cell--radioactive")).map((cell) => cell.title);
       assert.deepEqual(radioactive(instance.createPeriodicTable("U")), []);
 
       instance.config.markRadioactive = true;
       const table = instance.createPeriodicTable("U");
+      assert.equal(table.children.length, 118);
       const marked = radioactive(table);
       assert.equal(marked.length, 38);
       for (const symbol of ["Tc", "Pm", "Bi", "Po", "Ra", "U", "Pu", "Og"]) {
@@ -653,11 +654,6 @@ describe("MMM-AtomVisualizer Core Functions", () => {
         assert.ok(!marked.includes(symbol), symbol);
       }
       assert.ok(hasClass(cellOf(table, "U"), "atom-table-cell--active"));
-
-      const legend = table.children.at(-1);
-      assert.equal(legend.className, "atom-table-legend");
-      assert.deepEqual(legend.children.map((child) => child.className), ["atom-table-swatch atom-table-cell--radioactive", ""]);
-      assert.equal(legend.children[1].innerText, "RADIOACTIVE");
     });
   });
 

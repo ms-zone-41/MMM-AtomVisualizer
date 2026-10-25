@@ -344,7 +344,7 @@ Module.register("MMM-AtomVisualizer", {
   },
 
   // A small periodic table with the element on display highlighted; with markRadioactive the radioactive elements are
-  // hatched and a legend explains it
+  // hatched
   createPeriodicTable (activeSymbol) {
     const table = document.createElement("div");
     table.className = "atom-periodic-table";
@@ -363,18 +363,6 @@ Module.register("MMM-AtomVisualizer", {
       cell.style.gridRow = String(row);
       cell.style.gridColumn = String(column);
       table.appendChild(cell);
-    }
-
-    if (this.config.markRadioactive) {
-      const legend = document.createElement("div");
-      legend.className = "atom-table-legend";
-      const swatch = document.createElement("span");
-      swatch.className = "atom-table-swatch atom-table-cell--radioactive";
-      const text = document.createElement("span");
-      text.innerText = this.translate("RADIOACTIVE");
-      legend.appendChild(swatch);
-      legend.appendChild(text);
-      table.appendChild(legend);
     }
 
     return table;
