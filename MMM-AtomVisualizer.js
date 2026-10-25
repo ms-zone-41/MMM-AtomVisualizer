@@ -30,6 +30,7 @@ Module.register("MMM-AtomVisualizer", {
     showDiscoveredBy: true,
     showPeriodicTable: false,
     showAbundance: false,
+    abundanceInPercent: false,
     showFact: false
   },
 
@@ -463,17 +464,17 @@ Module.register("MMM-AtomVisualizer", {
     };
   },
 
-  // Abundance in ppm by mass with 2 significant digits: in percent from 1000 ppm, as traces below 0.001 ppm. Rounded
-  // first, so that 999.9 ppm shows as 0.1 % and not as 1,000 ppm
+  // Abundance in ppm by mass with 2 significant digits: in percent from 1000 ppm (always with abundanceInPercent),
+  // as traces below 0.001 ppm. Rounded first, so that 999.9 ppm shows as 0.1 % and not as 1,000 ppm
   formatAbundance (ppm) {
     const rounded = Number(ppm.toPrecision(2));
-    if (rounded >= 1000) {
+    if (rounded < 0.001) {
+      return this.translate("ABUNDANCE_TRACES");
+    }
+    if (rounded >= 1000 || this.config.abundanceInPercent) {
       return this.abundanceFormats.percent.format(rounded / 1e6);
     }
-    if (rounded >= 0.001) {
-      return `${this.abundanceFormats.ppm.format(rounded)} ppm`;
-    }
-    return this.translate("ABUNDANCE_TRACES");
+    return `${this.abundanceFormats.ppm.format(rounded)} ppm`;
   },
 
   buildDetailsItems (element) {

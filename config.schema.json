@@ -8,7 +8,9 @@
     },
     "elements": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Element symbols to cycle through; an empty list includes all elements"
     },
     "cycleElements": {
@@ -113,6 +115,10 @@
     "showAbundance": {
       "type": "boolean",
       "description": "Show the abundance in the Earth's crust by mass: in percent from 1000 ppm, in ppm down to 0.001 ppm, below that as traces; elements without a value get no row"
+    },
+    "abundanceInPercent": {
+      "type": "boolean",
+      "description": "Show the abundance in percent at every size; otherwise values below 0.1 % are shown in ppm"
     },
     "showFact": {
       "type": "boolean",

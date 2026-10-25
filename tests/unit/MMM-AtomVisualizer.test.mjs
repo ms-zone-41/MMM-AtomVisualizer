@@ -687,6 +687,16 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       }
     });
 
+    it("should show percent for every value with abundanceInPercent", () => {
+      instance.config.abundanceInPercent = true;
+      for (const [ppm, de, en] of [[461000, "46 %", "46%"], [950, "0,095 %", "0.095%"], [14, "0,0014 %", "0.0014%"], [2.7, "0,00027 %", "0.00027%"], [0.004, "0,0000004 %", "0.0000004%"], [0.001, "0,0000001 %", "0.0000001%"]]) {
+        assert.equal(format("de", ppm), de);
+        assert.equal(format("en", ppm), en);
+      }
+      instance.translate = mock.fn(() => "Spuren");
+      assert.equal(format("de", 4e-13), "Spuren");
+    });
+
     it("should show traces below 0.001 ppm", () => {
       const traces = {de: "Spuren", en: "traces"};
       for (const locale of ["de", "en"]) {
