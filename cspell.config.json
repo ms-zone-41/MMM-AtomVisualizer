@@ -141,13 +141,15 @@
     "Erdkruste",
     "Spuren",
     "Aardkorst",
-    "sporen"
+    "sporen",
+    "xsmall"
   ],
   "ignorePaths": [
     "node_modules/**",
     "data/elements.json",
     "data/elements.js",
-    "data/build_elements.mjs"
+    "data/build_elements.mjs",
+    "data/facts.*.json"
   ],
   "dictionaries": ["node"]
 }

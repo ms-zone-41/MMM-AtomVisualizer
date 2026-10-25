@@ -213,6 +213,14 @@
   text-align: left;
 }
 
+/* No width of its own: the fact wraps within the width of the rows above instead of widening the column */
+.MMM-AtomVisualizer .atom-fact {
+  contain: inline-size;
+  margin-top: 6px;
+  font-size: var(--font-size-xsmall, 0.75rem);
+  color: var(--color-text, #999);
+}
+
 @keyframes atom-electron-spin {
   from {
     transform: rotate(0deg);

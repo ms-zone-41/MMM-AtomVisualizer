@@ -113,6 +113,10 @@
     "showAbundance": {
       "type": "boolean",
       "description": "Show the abundance in the Earth's crust by mass: in percent from 1000 ppm, in ppm down to 0.001 ppm, below that as traces; elements without a value get no row"
+    },
+    "showFact": {
+      "type": "boolean",
+      "description": "Show a short fact about the element from data/facts.<language>.json below the details, a different one each time the element comes up; without a file for the language, no fact is shown"
     }
   }
 }

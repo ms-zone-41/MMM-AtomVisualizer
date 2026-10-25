@@ -2,9 +2,9 @@
 
 import {beforeEach, describe, it, mock} from "node:test";
 import {dirname, join} from "node:path";
+import {readFileSync, readdirSync} from "node:fs";
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
-import {readFileSync} from "node:fs";
 import vm from "node:vm";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -123,6 +123,7 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     };
     instance.symbolLookup = instance.buildSymbolLookup();
     instance.detailFields = instance.buildDetailFieldDefinitions();
+    instance.shownFacts = new Map();
     instance.translate = (key) => key;
   });
 
@@ -655,8 +656,9 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     it("should leave the DOM as it was while the new options are off", () => {
       instance.config.element = "O";
       const withoutOptions = serializeDom(instance.getDom());
-      Object.assign(instance.config, {showPeriodicTable: false, showAbundance: false});
-      for (const name of ["createPeriodicTable", "formatAbundance"]) {
+      Object.assign(instance.config, {showPeriodicTable: false, showAbundance: false, showFact: false});
+      instance.facts = {O: ["A fact"]};
+      for (const name of ["createPeriodicTable", "formatAbundance", "currentFact"]) {
         instance[name] = () => assert.fail(`${name} ran`);
       }
       assert.equal(serializeDom(instance.getDom()), withoutOptions);
@@ -741,6 +743,129 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.deepEqual(detailRows("U"), ["DETAIL_ABUNDANCE", "2.7 ppm"]);
     });
   });
+
+  describe("currentFact", () => {
+    beforeEach(() => {
+      instance.facts = {Au: ["Au 1", "Au 2", "Au 3"], U: ["U 1", "U 2"], H: ["H 1"], He: []};
+    });
+
+    it("should never show the fact that the element showed the time before", () => {
+      const shown = {Au: [], U: []};
+      for (let round = 0; round < 200; round += 1) {
+        for (const symbol of ["Au", "U", "C"]) {
+          const fact = instance.currentFact(symbol);
+          if (symbol !== "C") {
+            assert.notEqual(fact, shown[symbol].at(-1), `${symbol} in round ${round}`);
+            shown[symbol].push(fact);
+          }
+        }
+      }
+      assert.deepEqual(new Set(shown.Au), new Set(instance.facts.Au));
+      assert.deepEqual(shown.U.slice(2, 6), shown.U.slice(0, 4));
+    });
+
+    it("should keep the fact while the element stays on display", () => {
+      for (let display = 0; display < 20; display += 1) {
+        const fact = instance.currentFact("Au");
+        for (let render = 0; render < 5; render += 1) {
+          assert.equal(instance.currentFact("Au"), fact);
+        }
+        instance.currentFact("U");
+      }
+    });
+
+    it("should show the only fact of an element every time", () => {
+      for (let display = 0; display < 5; display += 1) {
+        assert.equal(instance.currentFact("H"), "H 1");
+        instance.currentFact("Au");
+      }
+    });
+
+    it("should show no fact for an element without facts or before the facts arrive", () => {
+      assert.equal(instance.currentFact("He"), null);
+      assert.equal(instance.currentFact("C"), null);
+      instance.facts = undefined;
+      assert.equal(instance.currentFact("Au"), null);
+    });
+
+    it("should pick a fact when the facts arrive while the element is on display", () => {
+      instance.facts = undefined;
+      assert.equal(instance.currentFact("Au"), null);
+      instance.facts = {Au: ["Au 1", "Au 2"]};
+      const fact = instance.currentFact("Au");
+      assert.ok(instance.facts.Au.includes(fact));
+      assert.equal(instance.currentFact("Au"), fact);
+    });
+  });
+
+  describe("fact line", () => {
+    const details = () => instance.getDom().children[1];
+    const factLine = () => details().children.find((child) => child.className === "atom-fact");
+
+    beforeEach(() => {
+      context.document.createElement = fakeElement;
+      instance.config.showFact = true;
+      instance.facts = {Au: ["Au 1", "Au 2", "Au 3"]};
+    });
+
+    it("should show a fact below the detail grid and the same one while the element stays", () => {
+      instance.activeSymbol = "Au";
+      assert.deepEqual(details().children.map((child) => child.className), ["atom-label", "atom-detail-grid", "atom-fact"]);
+      const fact = factLine().innerText;
+      assert.ok(instance.facts.Au.includes(fact));
+      for (let render = 0; render < 5; render += 1) {
+        assert.equal(factLine().innerText, fact);
+      }
+      instance.activeSymbol = "C";
+      assert.equal(factLine(), undefined);
+      instance.activeSymbol = "Au";
+      assert.notEqual(factLine().innerText, fact);
+    });
+
+    it("should show the details also when the fact is all they show", () => {
+      for (const key of ["showLabel", "showAtomicNumber", "showShells", "showAtomicMass", "showCategory", "showCas", "showPhase", "showElectronegativity", "showDiscoveredBy"]) {
+        instance.config[key] = false;
+      }
+      instance.activeSymbol = "Au";
+      assert.deepEqual(details().children.map((child) => child.className), ["atom-fact"]);
+    });
+  });
+
+  describe("loadFacts", () => {
+    beforeEach(() => {
+      context.config = {language: "de"};
+      instance.file = (name) => `modules/MMM-AtomVisualizer/${name}`;
+      instance.updateDom = mock.fn();
+    });
+
+    it("should fetch the facts of the MagicMirror language and show them", async () => {
+      context.fetch = mock.fn(() => Promise.resolve({ok: true, json: () => Promise.resolve({Au: ["Au 1"]})}));
+      await instance.loadFacts();
+      assert.deepEqual(context.fetch.mock.calls.map((call) => call.arguments[0]), ["modules/MMM-AtomVisualizer/data/facts.de.json"]);
+      assert.equal(instance.facts.Au[0], "Au 1");
+      assert.equal(instance.updateDom.mock.callCount(), 1);
+    });
+
+    it("should leave the module without facts when there is no file", async () => {
+      const warnings = global.Log.warn.mock.callCount();
+      context.fetch = mock.fn(() => Promise.resolve({ok: false, status: 404}));
+      await instance.loadFacts();
+      context.fetch = mock.fn(() => Promise.reject(new TypeError("Failed to fetch")));
+      await instance.loadFacts();
+      assert.equal(instance.facts, undefined);
+      assert.equal(instance.updateDom.mock.callCount(), 0);
+      assert.equal(global.Log.warn.mock.callCount() - warnings, 2);
+    });
+
+    it("should load the facts in start() only with showFact", () => {
+      instance.loadFacts = mock.fn();
+      instance.start();
+      assert.equal(instance.loadFacts.mock.callCount(), 0);
+      instance.config.showFact = true;
+      instance.start();
+      assert.equal(instance.loadFacts.mock.callCount(), 1);
+    });
+  });
 });
 
 describe("data files", () => {
@@ -759,6 +884,17 @@ describe("data files", () => {
       assert.ok(Object.hasOwn(context.ELEMENTS_DATA, symbol), `unknown element ${symbol}`);
       if (ppm !== null) {
         assert.ok(Number.isFinite(ppm) && ppm >= 0, `${symbol}: ${ppm}`);
+      }
+    }
+  });
+
+  it("should give known elements lists of facts in every facts file", () => {
+    const factFiles = readdirSync(join(__dirname, "../../data")).filter((name) => (/^facts\.[a-z]+\.json$/u).test(name));
+    assert.ok(factFiles.length > 0);
+    for (const name of factFiles) {
+      for (const [symbol, facts] of Object.entries(JSON.parse(readData(name)))) {
+        assert.ok(Object.hasOwn(context.ELEMENTS_DATA, symbol), `${name}: unknown element ${symbol}`);
+        assert.ok(Array.isArray(facts) && facts.length > 0 && facts.every((fact) => typeof fact === "string" && fact.trim() !== ""), `${name}: ${symbol}`);
       }
     }
   });

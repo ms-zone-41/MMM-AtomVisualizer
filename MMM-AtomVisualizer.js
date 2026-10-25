@@ -1,7 +1,7 @@
-/* global Module, ELEMENTS_DATA, ABUNDANCE_DATA */
+/* global Module, Log, ELEMENTS_DATA, ABUNDANCE_DATA */
 
 const DETAIL_KEYS = ["showAtomicNumber", "showShells", "showAtomicMass", "showCategory", "showCas", "showPhase", "showElectronegativity", "showDiscoveredBy", "showAbundance"];
-const SHOW_KEYS = ["showLabel", ...DETAIL_KEYS];
+const SHOW_KEYS = ["showLabel", ...DETAIL_KEYS, "showFact"];
 
 Module.register("MMM-AtomVisualizer", {
   defaults: {
@@ -29,7 +29,8 @@ Module.register("MMM-AtomVisualizer", {
     showElectronegativity: true,
     showDiscoveredBy: true,
     showPeriodicTable: false,
-    showAbundance: false
+    showAbundance: false,
+    showFact: false
   },
 
   start () {
@@ -37,6 +38,10 @@ Module.register("MMM-AtomVisualizer", {
     this.detailFields = this.buildDetailFieldDefinitions();
     if (this.config.showAbundance) {
       this.abundanceFormats = this.buildAbundanceFormats(globalThis.config.locale || globalThis.config.language);
+    }
+    this.shownFacts = new Map();
+    if (this.config.showFact) {
+      this.loadFacts();
     }
 
     this.sanitizeConfig();
@@ -74,6 +79,21 @@ Module.register("MMM-AtomVisualizer", {
       de: "translations/de.json",
       nl: "translations/nl.json"
     };
+  },
+
+  // Without a facts file for the language, the module shows no facts
+  async loadFacts () {
+    const file = this.file(`data/facts.${globalThis.config.language}.json`);
+    try {
+      const response = await fetch(file);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      this.facts = await response.json();
+      this.updateDom();
+    } catch (error) {
+      Log.warn(`${this.name}: no facts from ${file} (${error.message})`);
+    }
   },
 
   getElementName (element, symbol) {
@@ -385,7 +405,39 @@ Module.register("MMM-AtomVisualizer", {
       details.appendChild(grid);
     }
 
+    const fact = this.config.showFact
+      ? this.currentFact(symbol)
+      : null;
+    if (fact) {
+      const factLine = document.createElement("div");
+      factLine.className = "atom-fact";
+      factLine.innerText = fact;
+      details.appendChild(factLine);
+    }
+
     return details;
+  },
+
+  // The fact about the element on display: a random one each time the element comes up, never the one shown the time
+  // before, and the same while the element stays
+  currentFact (symbol) {
+    const facts = this.facts?.[symbol] ?? [];
+    if (facts.length > 0 && (this.factSymbol !== symbol || !this.shownFacts.has(symbol))) {
+      this.shownFacts.set(symbol, this.randomIndex(facts.length, this.shownFacts.get(symbol)));
+    }
+    this.factSymbol = symbol;
+    return facts[this.shownFacts.get(symbol)] ?? null;
+  },
+
+  // A random index below count, other than skip unless that is the only one
+  randomIndex (count, skip) {
+    if (typeof skip === "undefined" || count < 2) {
+      return Math.floor(Math.random() * count);
+    }
+    const index = Math.floor(Math.random() * (count - 1));
+    return index < skip
+      ? index
+      : index + 1;
   },
 
   // Built once in start() so format() callbacks can close over the module's `this`

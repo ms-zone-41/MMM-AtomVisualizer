@@ -64,6 +64,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `showDiscoveredBy`      | `boolean`  | `true`  | Show discoverer                                                                                         |
 | `showPeriodicTable`     | `boolean`  | `false` | Show a small periodic table that marks the element (cell size: CSS variable `--atom-table-cell-size`)   |
 | `showAbundance`         | `boolean`  | `false` | Show the abundance in the Earth's crust by mass (in % from 1000 ppm, below 0.001 ppm as traces)         |
+| `showFact`              | `boolean`  | `false` | Show a short fact about the element from `data/facts.<language>.json`, a new one each time it comes up  |
 
 ## Code of Conduct
 
@@ -71,7 +72,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Data Sources
 
-Element data is bundled statically in `data/elements.json`, the abundances in the Earth's crust in `data/abundance.json`. See [data/README.md](data/README.md) for field descriptions and license information.
+Element data is bundled statically in `data/elements.json`, the abundances in the Earth's crust in `data/abundance.json` and the facts in `data/facts.<language>.json`. See [data/README.md](data/README.md) for field descriptions and license information.
 
 ## License
 

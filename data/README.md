@@ -39,6 +39,10 @@ To regenerate `elements.json` from the original sources, see the instructions in
 
 Abundance of the elements in the Earth's crust in ppm (mg/kg) by mass, keyed by symbol: a number, or `null` where there is no value. A missing element counts as `null`, and the module shows no abundance for it.
 
+## `facts.<language>.json`
+
+Short facts about the elements for the `showFact` option, one file per language (`facts.de.json` for `language: "de"`), keyed by symbol: an array of strings. The module loads the file with `fetch()`, so it needs no script. Elements without facts, and languages without a file, show no fact.
+
 ## Scripts for the browser
 
 MagicMirror loads module data with `getScripts()`, which takes scripts, not JSON files. So `elements.js` holds the data of `elements.json` as the global `ELEMENTS_DATA`, and `abundance.js` holds `abundance.json` as `ABUNDANCE_DATA`. The JSON files are the sources: after changing one, make its script again in the module folder, for example (the unit tests check that both match):
