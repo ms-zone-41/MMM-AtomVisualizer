@@ -142,5 +142,7 @@
   "PHASE_SOLID": "Vast",
   "PHASE_LIQUID": "Vloeibaar",
   "DETAIL_ELECTRONEGATIVITY": "Elektronegativiteit",
-  "DETAIL_DISCOVERED_BY": "Ontdekt door"
+  "DETAIL_DISCOVERED_BY": "Ontdekt door",
+  "DETAIL_ABUNDANCE": "Aardkorst",
+  "ABUNDANCE_TRACES": "sporen"
 }

@@ -41,7 +41,10 @@ const context = vm.createContext({
   clearTimeout: global.clearTimeout,
   setInterval: global.setInterval,
   clearInterval: global.clearInterval,
-  ELEMENTS_DATA: JSON.parse(readFileSync(join(__dirname, "../../data/elements.json"), "utf8"))
+  config: {language: "en"},
+  ELEMENTS_DATA: JSON.parse(readFileSync(join(__dirname, "../../data/elements.json"), "utf8")),
+  // Fixed values instead of data/abundance.json, which the "data files" tests check
+  ABUNDANCE_DATA: {O: 461000, Si: 282000, Au: 0.004, Rn: 4e-13, U: 2.7, Pu: null}
 });
 script.runInContext(context);
 
@@ -650,11 +653,113 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     });
 
     it("should leave the DOM as it was while the new options are off", () => {
+      instance.config.element = "O";
       const withoutOptions = serializeDom(instance.getDom());
-      Object.assign(instance.config, {showPeriodicTable: false});
-      instance.createPeriodicTable = () => assert.fail("createPeriodicTable ran");
+      Object.assign(instance.config, {showPeriodicTable: false, showAbundance: false});
+      for (const name of ["createPeriodicTable", "formatAbundance"]) {
+        instance[name] = () => assert.fail(`${name} ran`);
+      }
       assert.equal(serializeDom(instance.getDom()), withoutOptions);
       assert.deepEqual(instance.getDom().children.map((child) => child.className), ["atom-stage", "atom-details"]);
     });
+  });
+
+  describe("formatAbundance", () => {
+    // Intl puts a no-break space between number and percent sign in German
+    const format = (locale, ppm) => {
+      instance.abundanceFormats = instance.buildAbundanceFormats(locale);
+      return instance.formatAbundance(ppm).replace(/\s/gu, " ");
+    };
+
+    it("should show percent from 1000 ppm, with 2 significant digits", () => {
+      for (const [ppm, de, en] of [[461000, "46 %", "46%"], [82300, "8,2 %", "8.2%"], [1400, "0,14 %", "0.14%"], [1000, "0,1 %", "0.1%"], [999.9, "0,1 %", "0.1%"]]) {
+        assert.equal(format("de", ppm), de);
+        assert.equal(format("en", ppm), en);
+      }
+    });
+
+    it("should show ppm from 0.001 ppm to below 1000 ppm, with 2 significant digits", () => {
+      for (const [ppm, de, en] of [[950, "950 ppm", "950 ppm"], [994, "990 ppm", "990 ppm"], [2.7, "2,7 ppm", "2.7 ppm"], [0.004, "0,004 ppm", "0.004 ppm"], [0.0315, "0,032 ppm", "0.032 ppm"], [0.001, "0,001 ppm", "0.001 ppm"]]) {
+        assert.equal(format("de", ppm), de);
+        assert.equal(format("en", ppm), en);
+      }
+    });
+
+    it("should show traces below 0.001 ppm", () => {
+      const traces = {de: "Spuren", en: "traces"};
+      for (const locale of ["de", "en"]) {
+        instance.translate = mock.fn(() => traces[locale]);
+        for (const ppm of [0.00094, 4e-13, 0]) {
+          assert.equal(format(locale, ppm), traces[locale]);
+        }
+        assert.ok(instance.translate.mock.calls.every((call) => call.arguments[0] === "ABUNDANCE_TRACES"));
+      }
+    });
+
+    it("should format for config.locale, else for config.language", () => {
+      instance.config.showAbundance = true;
+      for (const [globalConfig, expected] of [[{language: "de"}, "0,14 %"], [{language: "de", locale: "en-GB"}, "0.14%"]]) {
+        context.config = globalConfig;
+        instance.start();
+        assert.equal(instance.formatAbundance(1400).replace(/\s/gu, " "), expected);
+      }
+      context.config = {language: "en"};
+    });
+  });
+
+  describe("abundance row", () => {
+    const detailRows = (symbol) => {
+      instance.config.element = symbol;
+      const grid = instance.getDom().children[1].children.find((child) => child.className === "atom-detail-grid");
+      const spans = grid
+        ? grid.children
+        : [];
+      return spans.map((span) => span.innerText);
+    };
+
+    beforeEach(() => {
+      context.document.createElement = fakeElement;
+      instance.config.showAbundance = true;
+      instance.abundanceFormats = instance.buildAbundanceFormats("en");
+    });
+
+    it("should add the abundance as the last row of the detail grid", () => {
+      assert.deepEqual(detailRows("O").slice(-2), ["DETAIL_ABUNDANCE", "46%"]);
+      assert.deepEqual(detailRows("Au").slice(-2), ["DETAIL_ABUNDANCE", "0.004 ppm"]);
+      assert.deepEqual(detailRows("Rn").slice(-2), ["DETAIL_ABUNDANCE", "ABUNDANCE_TRACES"]);
+    });
+
+    it("should add no row for an element without a value", () => {
+      assert.ok(!detailRows("Pu").includes("DETAIL_ABUNDANCE"));
+      assert.ok(!detailRows("H").includes("DETAIL_ABUNDANCE"));
+    });
+
+    it("should show the row also when it is the only detail", () => {
+      for (const key of ["showLabel", "showAtomicNumber", "showShells", "showAtomicMass", "showCategory", "showCas", "showPhase", "showElectronegativity", "showDiscoveredBy"]) {
+        instance.config[key] = false;
+      }
+      assert.deepEqual(detailRows("U"), ["DETAIL_ABUNDANCE", "2.7 ppm"]);
+    });
+  });
+});
+
+describe("data files", () => {
+  const readData = (name) => readFileSync(join(__dirname, "../../data", name), "utf8");
+
+  it("should hold the data of each JSON file in its script for the browser", () => {
+    for (const [scriptName, jsonName, globalName] of [["elements.js", "elements.json", "ELEMENTS_DATA"], ["abundance.js", "abundance.json", "ABUNDANCE_DATA"]]) {
+      const scriptContext = vm.createContext({});
+      new vm.Script(readData(scriptName), {filename: scriptName}).runInContext(scriptContext);
+      assert.equal(JSON.stringify(scriptContext[globalName]), JSON.stringify(JSON.parse(readData(jsonName))), `${scriptName} differs from ${jsonName}`);
+    }
+  });
+
+  it("should give the abundance of known elements as a number of ppm or null", () => {
+    for (const [symbol, ppm] of Object.entries(JSON.parse(readData("abundance.json")))) {
+      assert.ok(Object.hasOwn(context.ELEMENTS_DATA, symbol), `unknown element ${symbol}`);
+      if (ppm !== null) {
+        assert.ok(Number.isFinite(ppm) && ppm >= 0, `${symbol}: ${ppm}`);
+      }
+    }
   });
 });

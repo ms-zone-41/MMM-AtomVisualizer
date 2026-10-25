@@ -142,5 +142,7 @@
   "PHASE_SOLID": "Fest",
   "PHASE_LIQUID": "Flüssig",
   "DETAIL_ELECTRONEGATIVITY": "Elektronegativität",
-  "DETAIL_DISCOVERED_BY": "Entdeckt von"
+  "DETAIL_DISCOVERED_BY": "Entdeckt von",
+  "DETAIL_ABUNDANCE": "Erdkruste",
+  "ABUNDANCE_TRACES": "Spuren"
 }

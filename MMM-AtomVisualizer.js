@@ -1,6 +1,6 @@
-/* global Module, ELEMENTS_DATA */
+/* global Module, ELEMENTS_DATA, ABUNDANCE_DATA */
 
-const DETAIL_KEYS = ["showAtomicNumber", "showShells", "showAtomicMass", "showCategory", "showCas", "showPhase", "showElectronegativity", "showDiscoveredBy"];
+const DETAIL_KEYS = ["showAtomicNumber", "showShells", "showAtomicMass", "showCategory", "showCas", "showPhase", "showElectronegativity", "showDiscoveredBy", "showAbundance"];
 const SHOW_KEYS = ["showLabel", ...DETAIL_KEYS];
 
 Module.register("MMM-AtomVisualizer", {
@@ -28,12 +28,16 @@ Module.register("MMM-AtomVisualizer", {
     showPhase: true,
     showElectronegativity: true,
     showDiscoveredBy: true,
-    showPeriodicTable: false
+    showPeriodicTable: false,
+    showAbundance: false
   },
 
   start () {
     this.symbolLookup = this.buildSymbolLookup();
     this.detailFields = this.buildDetailFieldDefinitions();
+    if (this.config.showAbundance) {
+      this.abundanceFormats = this.buildAbundanceFormats(globalThis.config.locale || globalThis.config.language);
+    }
 
     this.sanitizeConfig();
 
@@ -61,7 +65,7 @@ Module.register("MMM-AtomVisualizer", {
   },
 
   getScripts () {
-    return [this.file("data/elements.js")];
+    return [this.file("data/elements.js"), this.file("data/abundance.js")];
   },
 
   getTranslations () {
@@ -360,7 +364,11 @@ Module.register("MMM-AtomVisualizer", {
       details.appendChild(label);
     }
 
-    const extraItems = this.buildDetailsItems(element);
+    // The abundance comes from its own data file
+    const data = this.config.showAbundance
+      ? {...element, abundance: ABUNDANCE_DATA[symbol]}
+      : element;
+    const extraItems = this.buildDetailsItems(data);
     if (extraItems.length > 0) {
       const grid = document.createElement("div");
       grid.className = "atom-detail-grid";
@@ -390,8 +398,30 @@ Module.register("MMM-AtomVisualizer", {
       {key: "showCas", dataKey: "cas", translateKey: "DETAIL_CAS", format: (v) => v},
       {key: "showPhase", dataKey: "phase", translateKey: "DETAIL_PHASE", format: (v) => this.translate(`PHASE_${v.toUpperCase()}`)},
       {key: "showElectronegativity", dataKey: "electronegativity", translateKey: "DETAIL_ELECTRONEGATIVITY", format: (v) => v},
-      {key: "showDiscoveredBy", dataKey: "discoveredBy", translateKey: "DETAIL_DISCOVERED_BY", format: (v) => v}
+      {key: "showDiscoveredBy", dataKey: "discoveredBy", translateKey: "DETAIL_DISCOVERED_BY", format: (v) => v},
+      {key: "showAbundance", dataKey: "abundance", translateKey: "DETAIL_ABUNDANCE", format: (v) => this.formatAbundance(v)}
     ];
+  },
+
+  // Built once in start(): number formats of the MagicMirror locale
+  buildAbundanceFormats (locale) {
+    return {
+      percent: new Intl.NumberFormat(locale, {style: "percent", maximumSignificantDigits: 2}),
+      ppm: new Intl.NumberFormat(locale, {maximumSignificantDigits: 2})
+    };
+  },
+
+  // Abundance in ppm by mass with 2 significant digits: in percent from 1000 ppm, as traces below 0.001 ppm. Rounded
+  // first, so that 999.9 ppm shows as 0.1 % and not as 1,000 ppm
+  formatAbundance (ppm) {
+    const rounded = Number(ppm.toPrecision(2));
+    if (rounded >= 1000) {
+      return this.abundanceFormats.percent.format(rounded / 1e6);
+    }
+    if (rounded >= 0.001) {
+      return `${this.abundanceFormats.ppm.format(rounded)} ppm`;
+    }
+    return this.translate("ABUNDANCE_TRACES");
   },
 
   buildDetailsItems (element) {

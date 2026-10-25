@@ -34,3 +34,15 @@ Static dataset with properties of all 118 chemical elements, keyed by symbol.
 ### Regenerating
 
 To regenerate `elements.json` from the original sources, see the instructions in `build_elements.mjs`.
+
+## abundance.json
+
+Abundance of the elements in the Earth's crust in ppm (mg/kg) by mass, keyed by symbol: a number, or `null` where there is no value. A missing element counts as `null`, and the module shows no abundance for it.
+
+## Scripts for the browser
+
+MagicMirror loads module data with `getScripts()`, which takes scripts, not JSON files. So `elements.js` holds the data of `elements.json` as the global `ELEMENTS_DATA`, and `abundance.js` holds `abundance.json` as `ABUNDANCE_DATA`. The JSON files are the sources: after changing one, make its script again in the module folder, for example (the unit tests check that both match):
+
+```bash
+{ printf '/* eslint-disable */\nvar ABUNDANCE_DATA = '; cat data/abundance.json; printf ';\n'; } > data/abundance.js
+```

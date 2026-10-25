@@ -1,0 +1,10 @@
+/* eslint-disable */
+var ABUNDANCE_DATA = {
+  "O": 461000,
+  "Si": 282000,
+  "Au": 0.004,
+  "Rn": 4e-13,
+  "U": 2.7,
+  "Pu": null
+}
+;

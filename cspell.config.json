@@ -137,7 +137,11 @@
     "Diatomic",
     "Polyatomic",
     "Lanthanide",
-    "niet"
+    "niet",
+    "Erdkruste",
+    "Spuren",
+    "Aardkorst",
+    "sporen"
   ],
   "ignorePaths": [
     "node_modules/**",
