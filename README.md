@@ -63,6 +63,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `showElectronegativity` | `boolean`  | `true`  | Show electronegativity (Pauling scale)                                                                  |
 | `showDiscoveredBy`      | `boolean`  | `true`  | Show discoverer                                                                                         |
 | `showPeriodicTable`     | `boolean`  | `false` | Show a small periodic table that marks the element (cell size: CSS variable `--atom-table-cell-size`)   |
+| `markRadioactive`       | `boolean`  | `false` | Mark radioactive elements: hatched in the table (with a legend) and a radiation sign after the name     |
 | `showAbundance`         | `boolean`  | `false` | Show the abundance in the Earth's crust by mass (in % from 1000 ppm, below 0.001 ppm as traces)         |
 | `abundanceInPercent`    | `boolean`  | `false` | Show the abundance in percent at every size (`false`: in ppm below 0.1 %)                               |
 | `showFact`              | `boolean`  | `false` | Show a short fact from `data/facts.<language>.json` (so far only `de`), a new one each time it comes up |

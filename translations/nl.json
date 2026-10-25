@@ -144,5 +144,6 @@
   "DETAIL_ELECTRONEGATIVITY": "Elektronegativiteit",
   "DETAIL_DISCOVERED_BY": "Ontdekt door",
   "DETAIL_ABUNDANCE": "Aardkorst",
-  "ABUNDANCE_TRACES": "Sporen"
+  "ABUNDANCE_TRACES": "Sporen",
+  "RADIOACTIVE": "radioactief"
 }

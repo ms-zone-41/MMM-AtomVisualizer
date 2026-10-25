@@ -112,6 +112,10 @@
       "type": "boolean",
       "description": "Show a small periodic table with the current element highlighted, as the first item of the module (left of the atom when the items are in a row)"
     },
+    "markRadioactive": {
+      "type": "boolean",
+      "description": "Mark the radioactive elements (technetium, promethium and everything from bismuth on): hatched in the periodic table with a legend, and a radiation sign after the element name"
+    },
     "showAbundance": {
       "type": "boolean",
       "description": "Show the abundance in the Earth's crust by mass: in percent from 1000 ppm, in ppm down to 0.001 ppm, below that as traces; elements without a value get no row"

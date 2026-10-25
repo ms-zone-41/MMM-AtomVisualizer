@@ -637,6 +637,47 @@ describe("MMM-AtomVisualizer Core Functions", () => {
       assert.ok(table.children.every((cell) => hasClass(cell, "atom-table-cell")));
       assert.deepEqual(table.children.filter((cell) => hasClass(cell, "atom-table-cell--active")).map((cell) => cell.title), ["U"]);
     });
+
+    it("should hatch the radioactive elements and explain it in a legend only with markRadioactive", () => {
+      const radioactive = (table) => table.children.filter((cell) => cell.title && hasClass(cell, "atom-table-cell--radioactive")).map((cell) => cell.title);
+      assert.deepEqual(radioactive(instance.createPeriodicTable("U")), []);
+
+      instance.config.markRadioactive = true;
+      const table = instance.createPeriodicTable("U");
+      const marked = radioactive(table);
+      assert.equal(marked.length, 38);
+      for (const symbol of ["Tc", "Pm", "Bi", "Po", "Ra", "U", "Pu", "Og"]) {
+        assert.ok(marked.includes(symbol), symbol);
+      }
+      for (const symbol of ["H", "Fe", "Mo", "Nd", "Pb"]) {
+        assert.ok(!marked.includes(symbol), symbol);
+      }
+      assert.ok(hasClass(cellOf(table, "U"), "atom-table-cell--active"));
+
+      const legend = table.children.at(-1);
+      assert.equal(legend.className, "atom-table-legend");
+      assert.deepEqual(legend.children.map((child) => child.className), ["atom-table-swatch atom-table-cell--radioactive", ""]);
+      assert.equal(legend.children[1].innerText, "RADIOACTIVE");
+    });
+  });
+
+  describe("radiation sign", () => {
+    const label = (symbol) => instance.createDetailsSection(context.ELEMENTS_DATA[symbol], symbol).children[0];
+
+    beforeEach(() => {
+      context.document.createElement = fakeElement;
+    });
+
+    it("should follow the name of a radioactive element only with markRadioactive", () => {
+      assert.deepEqual(label("U").children, []);
+
+      instance.config.markRadioactive = true;
+      const [sign] = label("U").children;
+      assert.equal(sign.className, "fas fa-radiation atom-radioactive-sign");
+      assert.equal(sign.title, "RADIOACTIVE");
+      assert.equal(label("Tc").children.length, 1);
+      assert.deepEqual(label("Pb").children, []);
+    });
   });
 
   describe("getDom", () => {
@@ -654,11 +695,11 @@ describe("MMM-AtomVisualizer Core Functions", () => {
     });
 
     it("should leave the DOM as it was while the new options are off", () => {
-      instance.config.element = "O";
+      instance.config.element = "U";
       const withoutOptions = serializeDom(instance.getDom());
-      Object.assign(instance.config, {showPeriodicTable: false, showAbundance: false, showFact: false});
-      instance.facts = {O: ["A fact"]};
-      for (const name of ["createPeriodicTable", "formatAbundance", "currentFact"]) {
+      Object.assign(instance.config, {showPeriodicTable: false, markRadioactive: false, showAbundance: false, showFact: false});
+      instance.facts = {U: ["A fact"]};
+      for (const name of ["createPeriodicTable", "isRadioactive", "formatAbundance", "currentFact"]) {
         instance[name] = () => assert.fail(`${name} ran`);
       }
       assert.equal(serializeDom(instance.getDom()), withoutOptions);

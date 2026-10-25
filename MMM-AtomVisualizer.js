@@ -29,6 +29,7 @@ Module.register("MMM-AtomVisualizer", {
     showElectronegativity: true,
     showDiscoveredBy: true,
     showPeriodicTable: false,
+    markRadioactive: false,
     showAbundance: false,
     abundanceInPercent: false,
     showFact: false
@@ -342,7 +343,8 @@ Module.register("MMM-AtomVisualizer", {
     return atom;
   },
 
-  // A small periodic table with the element on display highlighted
+  // A small periodic table with the element on display highlighted; with markRadioactive the radioactive elements are
+  // hatched and a legend explains it
   createPeriodicTable (activeSymbol) {
     const table = document.createElement("div");
     table.className = "atom-periodic-table";
@@ -350,16 +352,38 @@ Module.register("MMM-AtomVisualizer", {
     for (const [symbol, element] of Object.entries(ELEMENTS_DATA)) {
       const {row, column} = this.tablePosition(element);
       const cell = document.createElement("div");
-      cell.className = symbol === activeSymbol
-        ? "atom-table-cell atom-table-cell--active"
-        : "atom-table-cell";
+      cell.className = "atom-table-cell";
+      if (this.config.markRadioactive && this.isRadioactive(element)) {
+        cell.classList.add("atom-table-cell--radioactive");
+      }
+      if (symbol === activeSymbol) {
+        cell.classList.add("atom-table-cell--active");
+      }
       cell.title = symbol;
       cell.style.gridRow = String(row);
       cell.style.gridColumn = String(column);
       table.appendChild(cell);
     }
 
+    if (this.config.markRadioactive) {
+      const legend = document.createElement("div");
+      legend.className = "atom-table-legend";
+      const swatch = document.createElement("span");
+      swatch.className = "atom-table-swatch atom-table-cell--radioactive";
+      const text = document.createElement("span");
+      text.innerText = this.translate("RADIOACTIVE");
+      legend.appendChild(swatch);
+      legend.appendChild(text);
+      table.appendChild(legend);
+    }
+
     return table;
+  },
+
+  // No stable isotope: technetium, promethium and every element from bismuth on (bismuth-209 decays, with a
+  // half-life of about 2 × 10^19 years)
+  isRadioactive (element) {
+    return element.number === 43 || element.number === 61 || element.number >= 83;
   },
 
   // Row and column of an element in the table: periods 1 to 7, then a spacer row and the lanthanides (Z 57 to 71) and
@@ -382,6 +406,13 @@ Module.register("MMM-AtomVisualizer", {
       const label = document.createElement("div");
       label.className = "atom-label";
       label.innerText = `${this.getElementName(element, symbol)} (${symbol})`;
+      // The radiation sign of Font Awesome, which MagicMirror ships, after the name of a radioactive element
+      if (this.config.markRadioactive && this.isRadioactive(element)) {
+        const sign = document.createElement("i");
+        sign.className = "fas fa-radiation atom-radioactive-sign";
+        sign.title = this.translate("RADIOACTIVE");
+        label.appendChild(sign);
+      }
       details.appendChild(label);
     }
 

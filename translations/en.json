@@ -144,5 +144,6 @@
   "DETAIL_ELECTRONEGATIVITY": "Electronegativity",
   "DETAIL_DISCOVERED_BY": "Discovered by",
   "DETAIL_ABUNDANCE": "Earth's crust",
-  "ABUNDANCE_TRACES": "Traces"
+  "ABUNDANCE_TRACES": "Traces",
+  "RADIOACTIVE": "radioactive"
 }

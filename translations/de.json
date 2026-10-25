@@ -144,5 +144,6 @@
   "DETAIL_ELECTRONEGATIVITY": "Elektronegativität",
   "DETAIL_DISCOVERED_BY": "Entdeckt von",
   "DETAIL_ABUNDANCE": "Erdkruste",
-  "ABUNDANCE_TRACES": "Spuren"
+  "ABUNDANCE_TRACES": "Spuren",
+  "RADIOACTIVE": "radioaktiv"
 }
