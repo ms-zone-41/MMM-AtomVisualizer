@@ -116,7 +116,7 @@
     },
     "showFact": {
       "type": "boolean",
-      "description": "Show a short fact about the element from data/facts.<language>.json below the details, a different one each time the element comes up; without a file for the language, no fact is shown"
+      "description": "Show a short fact about the element from data/facts.<language>.json below the details, a different one each time the element comes up; without a file for the language, no fact is shown; so far only data/facts.de.json exists"
     }
   }
 }

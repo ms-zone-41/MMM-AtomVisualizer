@@ -42,15 +42,15 @@ Abundance of the elements in the Earth's crust in ppm (mg/kg) by mass, keyed by 
 ### Sources
 
 - **Values**: CRC Handbook of Chemistry and Physics, table "Abundance of Elements in the Earth's Crust and in the Sea" (97th edition, 2016–2017, p. 14-17): the median of reported values for the continental crust. Read from the column "Crust: CRC Handbook" of the Wikipedia [data page on the abundances of the elements](<https://en.wikipedia.org/wiki/Abundances_of_the_elements_(data_page)>) and checked against the Wikipedia article [Abundance of elements in Earth's crust](https://en.wikipedia.org/wiki/Abundance_of_elements_in_Earth%27s_crust), which cites the 97th edition, and against the crust column of the table "Elemental Abundances" in the Table of Isotopes of the Lawrence Berkeley National Laboratory.
-- **`null`**: Tc, Pm, At, Fr, Np, Pu and all elements from Am on, for which the table has no value (in nature only fleeting traces or none at all).
+- **`null`**: Tc, Pm, At, Fr, Np, Pu and all elements from Am on, for which the table has no value (in nature only fleeting traces or none at all). The crust article lists values without a source for Tc, Pm, At and Fr, which are not used.
 
-Other estimates differ, for many trace elements by a factor of 2 to 3 (for example Au, Pt, Hg and Cu), so the values are orders of magnitude rather than exact figures.
+Other estimates differ, for many trace elements by a factor of 2 to 3 (for example Au, Hg and Cu) and for Pt and C by up to about 10, so the values are orders of magnitude rather than exact figures.
 
 ## `facts.<language>.json`
 
 Short facts about the elements for the `showFact` option, one file per language (`facts.de.json` for `language: "de"`), keyed by symbol: an array of strings. The module loads the file with `fetch()`, so it needs no script. Elements without facts, and languages without a file, show no fact.
 
-`facts.de.json` has 10 facts each about 39 elements from hydrogen to plutonium, written for children and teenagers (about 10 to 16 years old) and checked against Wikipedia and other public references. Keep a fact to about 100 characters, so that it stays a short note next to the atom.
+`facts.de.json` has 10 facts each about 39 elements from hydrogen to plutonium, written for children and teenagers (about 10 to 16 years old) and checked against Wikipedia and other public references. Keep a fact to about 100 characters, so that it stays a short note next to the atom. The facts are written for this module and fall under its MIT license; they are not copied from the references.
 
 ## Scripts for the browser
 

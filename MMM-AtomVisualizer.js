@@ -83,7 +83,7 @@ Module.register("MMM-AtomVisualizer", {
 
   // Without a facts file for the language, the module shows no facts
   async loadFacts () {
-    const file = this.file(`data/facts.${globalThis.config.language}.json`);
+    const file = this.file(`data/facts.${globalThis.config.language.toLowerCase()}.json`);
     try {
       const response = await fetch(file);
       if (!response.ok) {

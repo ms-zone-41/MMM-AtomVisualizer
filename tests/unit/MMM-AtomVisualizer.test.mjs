@@ -889,7 +889,7 @@ describe("data files", () => {
   });
 
   it("should give known elements lists of facts in every facts file", () => {
-    const factFiles = readdirSync(join(__dirname, "../../data")).filter((name) => (/^facts\.[a-z]+\.json$/u).test(name));
+    const factFiles = readdirSync(join(__dirname, "../../data")).filter((name) => (/^facts\.[a-z-]+\.json$/u).test(name));
     assert.ok(factFiles.length > 0);
     for (const name of factFiles) {
       for (const [symbol, facts] of Object.entries(JSON.parse(readData(name)))) {

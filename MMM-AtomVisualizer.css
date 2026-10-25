@@ -213,9 +213,11 @@
   text-align: left;
 }
 
-/* No width of its own: the fact wraps within the width of the rows above instead of widening the column */
+/* No width of its own: the fact wraps within the width of the rows above instead of widening the column, but takes at
+   least 16em (about the default atom size), so that a label or a few short rows alone do not squeeze it */
 .MMM-AtomVisualizer .atom-fact {
   contain: inline-size;
+  min-width: 16em;
   margin-top: 6px;
   font-size: var(--font-size-xsmall, 0.75rem);
   color: var(--color-text, #999);

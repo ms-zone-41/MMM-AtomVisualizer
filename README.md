@@ -64,7 +64,7 @@ Add the following block to your `config.js` file and adjust the options as neede
 | `showDiscoveredBy`      | `boolean`  | `true`  | Show discoverer                                                                                         |
 | `showPeriodicTable`     | `boolean`  | `false` | Show a small periodic table that marks the element (cell size: CSS variable `--atom-table-cell-size`)   |
 | `showAbundance`         | `boolean`  | `false` | Show the abundance in the Earth's crust by mass (in % from 1000 ppm, below 0.001 ppm as traces)         |
-| `showFact`              | `boolean`  | `false` | Show a short fact about the element from `data/facts.<language>.json`, a new one each time it comes up  |
+| `showFact`              | `boolean`  | `false` | Show a short fact from `data/facts.<language>.json` (so far only `de`), a new one each time it comes up |
 
 ## Code of Conduct
 
