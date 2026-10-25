@@ -50,7 +50,7 @@ Other estimates differ, for many trace elements by a factor of 2 to 3 (for examp
 
 Short facts about the elements for the `showFact` option, one file per language (`facts.de.json` for `language: "de"`), keyed by symbol: an array of strings. The module loads the file with `fetch()`, so it needs no script. Elements without facts, and languages without a file, show no fact.
 
-`facts.de.json` has 10 facts each about 39 elements from hydrogen to plutonium, written for children and teenagers (about 10 to 16 years old) and checked against Wikipedia and other public references. Keep a fact to about 100 characters, so that it stays a short note next to the atom. The facts are written for this module and fall under its MIT license; they are not copied from the references.
+`facts.de.json` has 10 facts each about 51 elements from hydrogen to plutonium, written for children and teenagers (about 10 to 16 years old) and checked against Wikipedia and other public references. Keep a fact to about 100 characters, so that it stays a short note next to the atom. The facts are written for this module and fall under its MIT license; they are not copied from the references.
 
 ## Scripts for the browser
 

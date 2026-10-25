@@ -35,6 +35,30 @@
     "Glaskeramik-Kochfelder enthalten meist Lithium, damit sie sich bei Hitze kaum ausdehnen.",
     "Bei den Apollo-Flügen band Lithiumhydroxid das ausgeatmete Kohlenstoffdioxid der Astronauten."
   ],
+  "Be": [
+    "Brillen sind nach dem Beryll benannt: Aus diesem Mineral schliff man früher Augengläser.",
+    "Smaragd und Aquamarin sind Edelsteine aus Beryll, einem Mineral mit Beryllium.",
+    "Früher hieß Beryllium auch Glucinium, weil manche seiner giftigen Salze süß schmecken.",
+    "Der Hauptspiegel des Webb-Teleskops ist aus Beryllium, das sich in eisiger Kälte kaum verformt.",
+    "Weil Beryllium Röntgenstrahlen gut durchlässt, baut man daraus oft Fenster für Röntgengeräte.",
+    "Manche teure Lautsprecher haben Hochtöner aus Beryllium, weil es sehr leicht und steif ist.",
+    "1932 entdeckte James Chadwick das Neutron, als er Beryllium mit Alphateilchen beschoss.",
+    "Werkzeug aus Berylliumkupfer schlägt kaum zündende Funken – wichtig, wo explosive Gase sein können.",
+    "Im All entsteht Beryllium vor allem, wenn kosmische Strahlung größere Atomkerne zertrümmert.",
+    "Eingeatmeter Berylliumstaub kann die Lunge krank machen, darum gelten strenge Schutzregeln."
+  ],
+  "B": [
+    "Bor ist nach Borax benannt – das Mineral kam einst aus Tibet über die Seidenstraße nach Arabien.",
+    "1808 gewannen Gay-Lussac und Thénard in Paris und Humphry Davy in London unabhängig voneinander Bor.",
+    "In Jena entwickelte Otto Schott Glas mit Bor, das Hitze und schnelle Temperaturwechsel verträgt.",
+    "Die stärksten käuflichen Dauermagnete, etwa in Kopfhörern, bestehen aus Neodym, Eisen und Bor.",
+    "Zuckerrüben brauchen nur Spuren von Bor – doch fehlen sie, droht die Herz- und Trockenfäule.",
+    "In Kernreaktoren fangen Steuerstäbe mit Bor Neutronen ein und bremsen so die Kettenreaktion.",
+    "2016 fand der Marsrover Curiosity erstmals Bor auf dem Mars – in Mineraladern im Gestein.",
+    "Der Waschmittelname Persil kommt von seinen ersten Hauptzutaten: Perborat und Silikat.",
+    "In Spielschleim und Hüpfknete verknüpft Bor lange Moleküle – das macht sie zäh und dehnbar.",
+    "Das Bormineral Jadarit aus Serbien hat fast die Formel von Supermans Kryptonit – nur ohne Fluor."
+  ],
   "C": [
     "Diamant und Graphit sind beide reiner Kohlenstoff, nur die Atome sind anders angeordnet.",
     "Bleistiftminen enthalten kein Blei, sondern Graphit und Ton.",
@@ -311,6 +335,78 @@
     "Paracelsus nannte das Metall „Zinken“ – wohl wegen seiner zackigen Kristalle.",
     "Weiße Zinksalbe enthält Zinkoxid und hilft bei wunder Haut, etwa bei Babys."
   ],
+  "Ga": [
+    "Gallium wird schon bei knapp 30 °C flüssig – es schmilzt sogar in der warmen Hand.",
+    "Mendelejew sagte Gallium 1871 voraus – und korrigierte sogar die Dichte, die sein Entdecker maß.",
+    "Gallium wurde 1875 mit dem Spektroskop entdeckt: Ein Zinkerz zeigte unbekannte violette Linien.",
+    "Gallium ehrt die Heimat seines Entdeckers: Gallia ist der lateinische Name für Frankreich.",
+    "Blaue LEDs aus Galliumnitrid machten weißes LED-Licht möglich – 2014 gab es dafür den Nobelpreis.",
+    "In besonders kleinen Ladegeräten für Handys und Laptops stecken Bauteile aus Galliumnitrid.",
+    "Flüssiges Gallium dringt in Aluminium ein und macht es so brüchig, dass es leicht zerbricht.",
+    "Galinstan aus Gallium, Indium und Zinn ist flüssig und ersetzt in manchen Thermometern Quecksilber.",
+    "Gallium wird nur als Nebenprodukt gewonnen, meist bei der Verarbeitung von Bauxit zu Aluminium.",
+    "Radioaktives Gallium-68 hilft Ärzten, im PET-Scan Tumore aufzuspüren."
+  ],
+  "As": [
+    "Der Name Arsen geht auf ein persisches Wort für „gelb“ zurück – gemeint war das Mineral Auripigment.",
+    "Albertus Magnus aus Lauingen an der Donau soll um 1250 als Erster reines Arsen gewonnen haben.",
+    "Schon vor über 6000 Jahren gab es Arsenbronze: Kupfer, das durch Arsen härter wurde.",
+    "Die Infrarot-LED in Fernbedienungen besteht meist aus einer Arsenverbindung wie Galliumarsenid.",
+    "Arsentrioxid ist heute ein wirksames Medikament gegen eine seltene Form von Blutkrebs.",
+    "Der Gebänderte Saumfarn holt Arsen aus dem Boden – so kann er helfen, belastete Erde zu reinigen.",
+    "Arsenik ist kein anderes Wort für Arsen, sondern eine Verbindung aus Arsen und Sauerstoff.",
+    "Die giftige Farbe Schweinfurter Grün enthält Arsen und ist nach der Stadt in Franken benannt.",
+    "In weiten Teilen Bangladeschs enthält das Grundwasser von Natur aus zu viel Arsen.",
+    "Meeresfisch enthält etwas Arsen – aber vor allem in einer Form, die praktisch ungiftig ist."
+  ],
+  "Br": [
+    "Brom bedeutet „Gestank“ – das griechische Wort „bromos“ passt zu seinem stechenden Geruch.",
+    "Den Purpur römischer Kaiser gewann man aus Tausenden Meeresschnecken – der Farbstoff enthält Brom.",
+    "Justus von Liebig hatte Brom 1825 schon vor sich, hielt es aber für eine Iod-Chlor-Verbindung.",
+    "Israel und Jordanien gewinnen große Mengen Brom aus dem salzigen Wasser des Toten Meeres.",
+    "Am meisten Brom braucht man für Flammschutzmittel, die Kunststoffe schwer entflammbar machen.",
+    "Kaliumbromid gilt als erstes wirksames Epilepsie-Mittel – Tierärzte geben es noch heute Hunden.",
+    "Die rotbraunen Dämpfe von Brom sind giftig und ätzend – im Labor arbeitet man damit unter dem Abzug.",
+    "In Whirlpools desinfiziert man oft mit Brom, weil es im warmen Wasser beständiger ist als Chlor.",
+    "Manche weiße Blutkörperchen bekämpfen Parasiten mit einem Stoff, den sie aus Bromid herstellen.",
+    "Der Farbstoff Bromthymolblau zeigt an, ob etwas sauer (gelb) oder basisch (blau) ist."
+  ],
+  "Kr": [
+    "Krypton und Kryptografie haben dieselbe Wurzel: das griechische „kryptos“ für verborgen.",
+    "1898 entdeckten Ramsay und Travers Krypton – und nur wenige Wochen später Neon und Xenon.",
+    "Von 1960 bis 1983 war der Meter über das orange Licht von Krypton-86-Atomen festgelegt.",
+    "Laser mit Krypton und Fluor belichten mit UV-Licht winzige Strukturen auf Computerchips.",
+    "Kryptondifluorid, eine Verbindung von Krypton mit Fluor, greift sogar Gold an.",
+    "Manche Blitzlampen für Fotos von superschnellen Vorgängen sind mit Krypton gefüllt.",
+    "Krypton gewinnt man aus verflüssigter Luft – nebenbei, wenn daraus Sauerstoff hergestellt wird.",
+    "Manches Grundwasser ist Hunderttausende Jahre alt – das verrät das Krypton-81 darin.",
+    "Flüssig ist Krypton bei normalem Druck nur zwischen etwa minus 157 und minus 153 °C.",
+    "Im Glas mancher Marsmeteoriten ist Marsluft eingeschlossen – samt etwas Krypton."
+  ],
+  "Sr": [
+    "Strontium ist nach dem schottischen Dorf Strontian benannt, in dessen Nähe man sein Erz fand.",
+    "Das leuchtende Rot von Signalfackeln, etwa für Schiffe in Seenot, stammt meist von Strontium.",
+    "Nachleuchtendes Spielzeug enthält oft Strontiumaluminat, das Licht speichert und langsam abgibt.",
+    "Die besten Strontium-Atomuhren würden in 15 Milliarden Jahren keine Sekunde falsch gehen.",
+    "Strontium im Zahnschmelz hilft Forschern herauszufinden, wo ein Mensch als Kind gelebt hat.",
+    "Im 19. Jahrhundert gab es im Münsterland Hunderte Strontianit-Gruben – für die Zuckerherstellung.",
+    "Strontiumtitanat funkelt bunter als Diamant – ab etwa 1955 verkaufte man es als Diamant-Ersatz.",
+    "Viele Kühlschrankmagnete enthalten Strontiumferrit, eine Magnetkeramik aus Strontium und Eisenoxid.",
+    "In einer Höhle in Ohio funkeln große Kristalle aus Coelestin, einem Mineral mit Strontium.",
+    "Manche Strahlentierchen, winzige Einzeller im Meer, bauen ihr Skelett aus Strontiumsulfat."
+  ],
+  "Pd": [
+    "Palladium schluckt bei Zimmertemperatur bis zum 900-Fachen seines eigenen Volumens an Wasserstoff.",
+    "Palladium heißt nach dem Asteroiden Pallas, den der Bremer Arzt Heinrich Olbers 1802 entdeckte.",
+    "Wollaston bot sein neu entdecktes Palladium 1803 zunächst anonym in einem Londoner Laden an.",
+    "Mit Palladium verknüpft man Moleküle, etwa für Medikamente: 2010 gab es dafür den Chemie-Nobelpreis.",
+    "Weißgold bekommt seine helle Farbe oft durch Palladium, das man dem Gold beimischt.",
+    "Um 2020 kostete ein Gramm Palladium zeitweise mehr als ein Gramm Gold.",
+    "Von den sechs Platinmetallen hat Palladium die geringste Dichte und den niedrigsten Schmelzpunkt.",
+    "In „Iron Man 2“ steckt im Reaktor in Tony Starks Brust ein Kern aus Palladium.",
+    "Durch heißes Palladium schlüpft fast nur Wasserstoff – so gewinnt man besonders reinen Wasserstoff.",
+    "Kohlenmonoxid färbt Palladiumchlorid schwarz – so lässt sich das giftige Gas nachweisen."
+  ],
   "Ag": [
     "Silber leitet Strom und Wärme besser als jedes andere Metall.",
     "Argentinien ist nach dem Silber benannt – auf Latein heißt es argentum.",
@@ -358,6 +454,30 @@
     "Ärzte lassen Patienten speziell behandeltes Xenon einatmen – so zeigt das MRT die Lunge.",
     "Tief unter der Erde suchen Forscher mit tonnenweise flüssigem Xenon nach Dunkler Materie.",
     "1989 schrieben Forscher mit 35 einzelnen Xenon-Atomen die Buchstaben „IBM“."
+  ],
+  "Cs": [
+    "1967 wurde die Sekunde über Caesium festgelegt: als 9.192.631.770 Schwingungen seiner Strahlung.",
+    "Funkuhren in Deutschland richten sich nach den Caesium-Atomuhren in Braunschweig.",
+    "Bunsen – der vom Bunsenbrenner – und Kirchhoff entdeckten Caesium in Mineralwasser aus Bad Dürkheim.",
+    "Caesium, das erste per Spektralanalyse entdeckte Element, heißt nach seinen himmelblauen Linien.",
+    "Nur Quecksilber hat unter den nicht radioaktiven Metallen einen tieferen Schmelzpunkt als Caesium.",
+    "Caesium explodiert in Wasser und reagiert sogar noch mit Eis von minus 116 °C.",
+    "Mit Caesium-Magnetometern finden Archäologen Spuren alter Siedlungen im Boden, ohne zu graben.",
+    "Manche Waldpilze in Süddeutschland enthalten bis heute radioaktives Caesium aus Tschernobyl.",
+    "Kein Element gibt so leicht Elektronen ab wie Caesium – darum steckt es in Nachtsichtgeräten.",
+    "1971 flogen Forscher Caesium-Atomuhren um die Welt und maßen so Einsteins Zeitdehnung nach."
+  ],
+  "Ba": [
+    "Barium ist nach dem griechischen „barys“ (schwer) benannt: Sein Mineral Schwerspat ist sehr schwer.",
+    "Röntgen entdeckte 1895 seine Strahlen, als ein Schirm mit einem Bariumsalz aufleuchtete.",
+    "Bariumbrei macht Magen und Darm im Röntgenbild sichtbar – er ist ungiftig, weil er sich nicht löst.",
+    "Wenn Feuerwerk grün leuchtet, steckt meist Barium dahinter.",
+    "Anfang des 17. Jahrhunderts staunte man in Bologna: Geglühter Schwerspat leuchtete im Dunkeln nach.",
+    "1984 erzeugte ein deutscher Forschungssatellit mit einer Bariumwolke einen künstlichen Kometen.",
+    "Gekühlt mit flüssigem Stickstoff, schwebt der bariumhaltige Supraleiter YBCO über Magneten.",
+    "Über eine Billion winzige Keramik-Kondensatoren entstehen pro Jahr – viele mit Bariumtitanat.",
+    "Der meiste Schwerspat wird gemahlen und beim Bohren nach Erdöl und Erdgas gebraucht.",
+    "Manche Wüstenrosen, rosenförmige Kristalle aus dem Sand, bestehen aus Schwerspat, also Bariumsulfat."
   ],
   "W": [
     "Wolfram schmilzt erst bei 3422 °C – das ist der höchste Schmelzpunkt aller Metalle.",
@@ -418,6 +538,30 @@
     "Blei ist das letzte stabile Element: Alle Elemente mit schwereren Atomen sind radioaktiv.",
     "Uran zerfällt über viele Zwischenschritte und wird am Ende zu Blei.",
     "In alten Kirchenfenstern halten Bleistreifen die bunten Glasstücke zusammen."
+  ],
+  "Bi": [
+    "Reines Bismut kann treppenförmige Kristalle bilden, die dank dünner Oxidschichten bunt schillern.",
+    "Bismut ist radioaktiv, doch seine Halbwertszeit übertrifft das Alter des Weltalls milliardenfach.",
+    "Magnete stoßen Bismut ab – bei Raumtemperatur stärker als jedes andere Metall.",
+    "Für ein Schwermetall ist Bismut kaum giftig – es kann daher Blei ersetzen, etwa in Angelgewichten.",
+    "Manche Sprinkler lösen bei Feuer aus, weil ein Lot mit Bismut schon unter 100 °C schmilzt.",
+    "Magenmittel mit Bismut färben manchmal die Zunge schwarz – das ist harmlos und geht vorbei.",
+    "Den Perlmuttglanz mancher Lidschatten und Nagellacke erzeugt eine Bismutverbindung.",
+    "Bismut heißt auch Wismut – daraus machte der Gelehrte Georgius Agricola das lateinische „bisemutum“.",
+    "Bismut galt lange als eine Art Blei oder Zinn – bis man 1753 zeigte, dass es ein eigenes Metall ist.",
+    "Die Inka fertigten Messer aus einer besonderen Bronze, der sie wohl absichtlich Bismut zusetzten."
+  ],
+  "Po": [
+    "Die Curies benannten Polonium nach Marie Curies Heimat Polen, die damals kein eigener Staat war.",
+    "Polonium war das erste Element, das man über seine Strahlung entdeckte – noch vor dem Radium.",
+    "Die sowjetischen Mondfahrzeuge Lunochod hielten sich in der eisigen Mondnacht mit Polonium warm.",
+    "Zigarettenrauch enthält winzige Mengen radioaktiven Poloniums.",
+    "Die Strahlung von Polonium-210 stoppt schon Papier – gefährlich wird Polonium vor allem im Körper.",
+    "Polonium stellt man heute im Kernreaktor her: Dort wird Bismut mit Neutronen bestrahlt.",
+    "Als einziges Element ordnet Polonium seine Atome unter Normalbedingungen in einfachen Würfeln an.",
+    "Mit Polonium erzeugten Irène und Frédéric Joliot-Curie 1934 erstmals künstliche Radioaktivität.",
+    "In manchen Fabriken beseitigt eine Spur Polonium elektrische Aufladung, etwa an Papierrollen.",
+    "In Säure gelöstes Polonium ist erst rosa – dann färbt seine eigene Strahlung die Lösung gelb."
   ],
   "Rn": [
     "Radon entsteht im Boden aus Uran und kann durch Risse in Keller gelangen.",
